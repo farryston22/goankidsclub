@@ -639,7 +639,7 @@ function parentArea(sel = S.current) {
         h('a', { href: '../privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy notice')),
       h('section', { class: 'card supportcard' }, h('h3', {}, '☕ Support Goan Kids Club'),
         h('p', {}, 'These games run on code, love and coffee. Two are free. ', h('b', {}, 'Buy me the third'), ' and help keep Goan Kids Club free and ad-free!'),
-        h('div', { class: 'treatrow' }, [['☕', '£3', 'a chai and a poi'], ['🍰', '£5', 'a slice of bebinca'], ['🍛', '£10', 'fish curry rice']].map(([e, p, t]) =>
+        h('div', { class: 'treatrow' }, [['☕', '£5', 'a chai and a poi'], ['🍰', '£10', 'a slice of bebinca'], ['🍛', '£20', 'fish curry rice']].map(([e, p, t]) =>
           h('a', { class: 'treat', onclick: () => track('support', { g: 'paypal', s: 1 }), href: "https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A", target: '_blank', rel: 'noopener' }, h('span', { class: 'e' }, e), h('b', {}, p), h('small', {}, t)))),
         h('p', { class: 'muted small' }, 'You choose the amount on PayPal. Dev borem korum!'),
         h('a', { class: 'btn sm wa', onclick: () => track('support', { g: 'whatsapp', s: 1 }), href: "https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20", target: '_blank', rel: 'noopener' }, '💬 Requests or ideas? WhatsApp us')),
