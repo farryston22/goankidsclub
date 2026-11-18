@@ -25,8 +25,12 @@ change, make it, test it in the browser pane, show him what changed, then commit
 - `serve.js` local preview: `node serve.js` → http://localhost:5180/games/
 
 ## Design rules (must keep)
-- Goan Indo-Portuguese look: lime-wash cream `#FBF5E6`, azulejo indigo `#1F4E9E`, ochre `#E9B634`, pink, palm green,
-  roof red `#B5442E`, white trim. Fonts: Fredoka (UI), Andika (letters, single-storey a and g for early readers).
+- Colours come from the logo (`logo.png`, round badge: two waving Goan kids, church, palms, beach, sun):
+  blue `#1D4F91` (G), yellow `#F3B72B` (o), orange `#E5572B` (a), green `#3A8A3F` (n), navy text `#142B57`,
+  sea-blue wave `#4EA6DC`, yellow ring `#F8C33A`, cream background `#FDFBF3`. Tagline: LEARN • PLAY • DISCOVER.
+  The wordmark "Goan" is always one colour per letter in that order.
+- Goan Indo-Portuguese art on top: lime-washed houses, red Mangalore roofs `#B5442E`, white trim, azulejo tiles.
+  Fonts: Fredoka (UI, matches the logo's rounded letters), Andika (letters, single-storey a and g for early readers).
 - Mascot: Tara the olive ridley turtle 🐢.
 - UK English everywhere (colour, maths, mum, ladybird, 1p/£1). Phonics as pure sounds ("sss", not "ess").
 - Big touch targets (iPad first), works at 375px phone width with no sideways scroll.

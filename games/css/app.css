@@ -2,9 +2,10 @@
    Palette from Goan Indo-Portuguese houses: lime-wash cream, ochre, indigo, pink, palm green,
    red Mangalore roof tiles, white trim, and blue-and-white azulejo tiles. */
 :root {
-  --wash: #FBF5E6; --wash2: #F3E9CF; --ink: #2A2440; --muted: #6F6886;
-  --ochre: #E9B634; --indigo: #1F4E9E; --indigo2: #3D6FB6; --pink: #E87EA1; --palm: #3E9B55; --roof: #B5442E;
-  --sea: #2BA6B5; --good: #2E9E62; --bad: #E0564F; --card: #FFFDF8; --line: #EADFC4; --shadow: #E2D4B2;
+  /* Logo colours: blue G, yellow o, orange a, green n, navy "Kids Club", sea-blue wave, yellow ring, cream. */
+  --wash: #FDFBF3; --wash2: #F5EDD6; --ink: #142B57; --muted: #5E6787;
+  --ochre: #F3B72B; --indigo: #1D4F91; --indigo2: #2F6DB5; --orange: #E5572B; --pink: #F06A6A; --palm: #3A8A3F; --roof: #B5442E;
+  --sea: #4EA6DC; --ring: #F8C33A; --good: #3A8A3F; --bad: #E5572B; --card: #FFFFFF; --line: #EFE4C6; --shadow: #E8DAB4;
   --r: 22px; --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -23,7 +24,11 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 /* ---------- header ---------- */
 .top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .ttl { flex: 1; min-width: 0; font-weight: 700; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--indigo); }
-.logo { font-size: 34px; }
+.logo { font-size: 34px; text-decoration: none; }
+.brand { font-size: 28px; color: var(--ink); letter-spacing: -.3px; }
+.brand .b1 { color: var(--indigo); } .brand .b2 { color: var(--ochre); } .brand .b3 { color: var(--orange); } .brand .b4 { color: var(--palm); }
+.tagline { text-align: center; letter-spacing: 3px; font-weight: 600; font-size: 15px; color: var(--ink); margin: 2px 0 6px; }
+.tagline i { font-style: normal; } .tagline .d1 { color: var(--orange); } .tagline .d2 { color: var(--palm); }
 .ibtn { width: 50px; height: 50px; flex: none; border-radius: 16px; background: var(--card); font-size: 24px; box-shadow: 0 4px 0 var(--shadow); display: grid; place-items: center; }
 .ibtn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--shadow); }
 .ibtn.av { font-size: 30px; }
@@ -37,6 +42,9 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
   background: linear-gradient(#CFEFFA, #F2FAF5 85%); border-radius: 0 0 0 0; }
 .village .sky svg { height: 100%; width: auto; max-width: 100%; }
 .azulejo { height: 34px; background: var(--azulejo) repeat-x left center / 34px 34px; border-top: 3px solid var(--indigo); border-bottom: 3px solid var(--indigo); }
+/* sea-blue wave from the logo under the tile band */
+.village:after { content: ""; display: block; height: 14px; margin-top: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 14'%3E%3Cpath d='M0 8 q15 -10 30 0 t30 0' fill='none' stroke='%234EA6DC' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x center / 60px 14px; }
 
 /* ---------- buttons ---------- */
 .btn { background: var(--indigo2); color: #fff; border-radius: 18px; padding: 13px 24px; font-weight: 600; font-size: 19px; box-shadow: 0 5px 0 #24477E; transition: transform .06s; }
@@ -52,7 +60,7 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 
 /* ---------- Tara the turtle ---------- */
 .mascotrow { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; }
-.mascot { width: 66px; height: 66px; flex: none; border-radius: 50%; font-size: 44px; background: radial-gradient(circle at 35% 30%, #DDF6E5, #9FD9B2); box-shadow: 0 4px 0 #74B98C; display: grid; place-items: center; animation: bob 3s ease-in-out infinite; }
+.mascot { width: 66px; height: 66px; flex: none; border-radius: 50%; font-size: 44px; background: #fff; border: 4px solid var(--ring); box-shadow: 0 4px 0 #E3C371; display: grid; place-items: center; animation: bob 3s ease-in-out infinite; }
 .mascot.talk { animation: talk .35s ease-in-out infinite alternate; }
 .mascot.happy { animation: hop .6s ease; }
 @keyframes bob { 50% { transform: translateY(-4px); } }

@@ -66,6 +66,9 @@ function setBubble(t) { lastSaid = t; const b = $('#speech'); if (b) b.textConte
 function say(text, parts) { setBubble(text); return speak(parts || [text], text); }
 /* Goan village skyline with an azulejo tile band; the child's own house (from Build a Goan House) joins the street. */
 const village = p => h('div', { class: 'village' }, h('div', { class: 'sky', html: villageSVG(p && p.house) }), h('div', { class: 'azulejo' }));
+/* Wordmark in the logo's colours: blue G, yellow o, orange a, green n, navy "Kids Club". */
+const brand = () => h('span', { class: 'brand' }, h('span', { class: 'b1' }, 'G'), h('span', { class: 'b2' }, 'o'), h('span', { class: 'b3' }, 'a'), h('span', { class: 'b4' }, 'n'), ' Kids Club');
+const tagline = () => h('div', { class: 'tagline' }, 'LEARN ', h('i', { class: 'd1' }, '•'), ' PLAY ', h('i', { class: 'd2' }, '•'), ' DISCOVER');
 function top(left, title, right = []) {
   return h('header', { class: 'top' }, left, h('div', { class: 'ttl' }, title), ...right);
 }
@@ -95,8 +98,8 @@ function who() {
   run++; stop();
   if (!S.profiles.length) return editChild(null, true);
   screen(
-    top(h('span', { class: 'logo' }, '🌴'), 'Goan Kids Club', [iconBtn('👪', 'Grown-ups', parentGate)]),
-    village(null),
+    top(h('a', { class: 'logo', href: '../', 'aria-label': 'Goan Kids Club home' }, '🌴'), brand(), [iconBtn('👪', 'Grown-ups', parentGate)]),
+    village(null), tagline(),
     mascot("Who's playing today?"),
     h('div', { class: 'kids' },
       S.profiles.map(p => h('button', { class: 'kid', onclick: () => { S.current = p.id; save(); sfx.tap(); hub(); } },
@@ -121,8 +124,8 @@ function editChild(p, first = false) {
   };
   name.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn(); });
   screen(
-    top(first ? h('span', { class: 'logo' }, '🌴') : iconBtn('⬅️', 'Back', () => (p ? parentArea() : who())), p ? 'Edit child' : first ? 'Welcome to Goan Kids Club!' : 'Add a child'),
-    first ? village(null) : null,
+    top(first ? h('span', { class: 'logo' }, '🌴') : iconBtn('⬅️', 'Back', () => (p ? parentArea() : who())), p ? 'Edit child' : first ? brand() : 'Add a child'),
+    first ? village(null) : null, first ? tagline() : null,
     h('div', { class: 'form' },
       first ? h('p', { class: 'lead' }, 'Bem-vindo! Fun learning games for ages 3 to 6: numbers, UK phonics, shapes, thinking, animals, Konkani and Goan heritage. No ads, nothing to sign up for. Grown-ups, please set up your child below.') : null,
       h('label', {}, 'Name'), name,

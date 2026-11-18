@@ -3,32 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Goan Kids Club</title>
+<title>Goan Kids Club – Learn, Play, Discover</title>
 <meta name="description" content="Goan Kids Club: free learning games for children aged 3 to 6, with Konkani and Goan heritage. No ads.">
-<meta name="theme-color" content="#1F4E9E">
+<meta name="theme-color" content="#1D4F91">
 <link rel="icon" href="games/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="games/icons/icon-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --wash: #FBF5E6; --ink: #2A2440; --indigo: #1F4E9E; --ochre: #E9B634; --muted: #6F6886; }
+  /* Colours from the Goan Kids Club logo */
+  :root { --cream: #FDFBF3; --navy: #142B57; --blue: #1D4F91; --yellow: #F3B72B; --orange: #E5572B; --green: #3A8A3F; --sea: #4EA6DC; --ring: #F8C33A; --muted: #5E6787; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100dvh; background: var(--wash); color: var(--ink); font: 500 18px/1.4 Fredoka, system-ui, sans-serif;
+  body { margin: 0; min-height: 100dvh; background: var(--cream); color: var(--navy); font: 500 18px/1.4 Fredoka, system-ui, sans-serif;
     display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 16px; }
-  .logo { font-size: 72px; line-height: 1; }
-  h1 { color: var(--indigo); font-size: clamp(32px, 7vw, 52px); margin: 10px 0 6px; }
+  .badge { width: min(340px, 78vw); aspect-ratio: 1; border-radius: 50%; border: 10px solid var(--ring); background: #fff;
+    display: grid; place-items: center; overflow: hidden; box-shadow: 0 8px 0 #EBD9A6; }
+  .badge img { width: 100%; height: 100%; object-fit: contain; }
+  .word { line-height: .95; }
+  .word .g { font-size: clamp(56px, 14vw, 88px); font-weight: 700; letter-spacing: -1px; }
+  .word .k { display: block; font-size: clamp(30px, 7vw, 46px); font-weight: 700; color: var(--navy); }
+  .c1 { color: var(--blue); } .c2 { color: var(--yellow); } .c3 { color: var(--orange); } .c4 { color: var(--green); }
+  .wave { width: 150px; height: 18px; margin: 10px auto 4px; display: block; }
+  .tag { letter-spacing: 3px; font-weight: 600; font-size: 16px; color: var(--navy); margin: 4px 0 18px; }
+  .tag i { font-style: normal; } .tag .d1 { color: var(--orange); } .tag .d2 { color: var(--green); }
   p { color: var(--muted); max-width: 520px; margin: 0 auto 22px; }
-  .tiles { height: 30px; width: min(520px, 100%); margin: 6px auto 26px; border-block: 3px solid var(--indigo);
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23F7F3EA'/%3E%3Cg fill='%231F4E9E'%3E%3Cellipse cx='50' cy='30' rx='9' ry='16'/%3E%3Cellipse cx='50' cy='70' rx='9' ry='16'/%3E%3Cellipse cx='30' cy='50' rx='16' ry='9'/%3E%3Cellipse cx='70' cy='50' rx='16' ry='9'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='8' fill='%23E1A92B'/%3E%3C/svg%3E") repeat-x center / 30px; }
-  a.play { display: inline-block; background: var(--ochre); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 26px;
-    padding: 18px 40px; border-radius: 22px; box-shadow: 0 6px 0 #B9861B; }
-  a.play:active { transform: translateY(3px); box-shadow: 0 3px 0 #B9861B; }
+  a.play { display: inline-block; background: var(--yellow); color: var(--navy); text-decoration: none; font-weight: 700; font-size: 26px;
+    padding: 18px 40px; border-radius: 999px; box-shadow: 0 6px 0 #C9901B; }
+  a.play:active { transform: translateY(3px); box-shadow: 0 3px 0 #C9901B; }
   small { display: block; margin-top: 26px; color: var(--muted); }
 </style>
 </head>
 <body>
-  <div class="logo">🐢🌴</div>
-  <h1>Goan Kids Club</h1>
-  <div class="tiles" aria-hidden="true"></div>
+  <div class="badge">
+    <!-- Shows the logo once logo.png is added; otherwise the coloured wordmark below stands in. -->
+    <img src="logo.png" alt="Goan Kids Club – Learn, Play, Discover" onerror="this.parentElement.style.display='none';document.getElementById('word').hidden=false">
+  </div>
+  <div id="word" class="word" hidden>
+    <span class="g"><span class="c1">G</span><span class="c2">o</span><span class="c3">a</span><span class="c4">n</span></span>
+    <span class="k">Kids Club</span>
+  </div>
+  <svg class="wave" viewBox="0 0 150 18" aria-hidden="true"><path d="M4 10 q18 -12 36 0 t36 0 t36 0 t34 0" fill="none" stroke="#4EA6DC" stroke-width="6" stroke-linecap="round"/></svg>
+  <div class="tag">LEARN <i class="d1">•</i> PLAY <i class="d2">•</i> DISCOVER</div>
   <p>Fun learning games for ages 3 to 6: numbers, phonics, shapes, animals, Konkani and Goan heritage.</p>
   <a class="play" href="games/">▶ Play games</a>
   <small>No ads · No sign-up · Works on iPad, phone and computer</small>
