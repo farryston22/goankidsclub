@@ -15,7 +15,10 @@ change, make it, test it in the browser pane, show him what changed, then commit
   GoaPages org). Schema in `supabase/migrations/`. Table `family_progress` is locked (RLS on, no policies); browsers
   can only call `gkc_load` / `gkc_save` / `gkc_delete`. Client: `games/js/sync.js` (merge: newest `updatedAt` per
   child wins, deleted ids are kept as tombstones), keys in `games/js/cloud-config.js` (publishable, safe to be public).
-  Children must always be able to play without it. Keep `privacy.html` in step with what is stored.
+  Children must always be able to play without it.
+- **Play time** (Grown-ups → Play time): per child daily limit, "timer from now", +10/+20 min, no limit today, and a
+  7-day chart. Counted every 5 s only on child screens while visible (`p.days`, `p.time` in app.js). When time is up
+  a game in progress may finish (hard stop 2 min over), then the "Time for a break" nap screen locks the games. Keep `privacy.html` in step with what is stored.
 
 ## Layout
 - `index.html` — small landing page with a "Play games" button.

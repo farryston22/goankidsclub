@@ -362,3 +362,28 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
   .opt .tile { width: 70px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+
+/* Play time: clock chip, break screen, grown-ups card */
+.chip.clock { color: var(--indigo); }
+.chip.clock.low { background: #FFE3D6; color: var(--orange); animation: glow 1.2s ease-in-out infinite; }
+.nap { padding-top: 4vh; }
+.napturtle { position: relative; font-size: 96px; line-height: 1; filter: saturate(.85); }
+.napturtle span { display: inline-block; animation: breathe 3s ease-in-out infinite; }
+.napturtle i { position: absolute; font-style: normal; font-weight: 700; color: var(--sea); font-size: 26px; right: -18px; top: 0; opacity: 0; animation: zzz 3s ease-in infinite; }
+.napturtle i:nth-of-type(2) { animation-delay: 1s; } .napturtle i:nth-of-type(3) { animation-delay: 2s; font-size: 34px; }
+@keyframes breathe { 50% { transform: scale(1.04, .97); } }
+@keyframes zzz { 0% { opacity: 0; transform: translate(0, 10px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(28px, -50px); } }
+.trow { border-top: 2px solid var(--line); padding: 12px 0 6px; }
+.trow:first-of-type { border-top: 0; }
+.thead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.thead .av { font-size: 30px; } .tstat { color: var(--muted); font-size: 15px; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 74px; margin: 10px 0 4px; max-width: 420px; }
+.wd { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; height: 100%; }
+.wd i { width: 70%; max-width: 30px; background: var(--sea); border-radius: 6px 6px 2px 2px; }
+.wd.today i { background: var(--ochre); }
+.wd small { font-size: 12px; color: var(--muted); }
+.timecard .lbl { min-width: 118px; font-weight: 600; }
+.timecard .btn.on { background: var(--indigo); color: #fff; }
+.sel { font: inherit; font-size: 17px; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--ink); }
+.tleft { font-weight: 600; color: var(--palm); margin: 6px 0; }
+.tleft.up { color: var(--orange); }

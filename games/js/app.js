@@ -81,6 +81,46 @@ const gstate = (p, g) => (p.games[g.id] = p.games[g.id] || { best: [], plays: 0 
 const unlocked = (p, g, s) => s <= g.start[p.band - 1] || (gstate(p, g).best[s - 1] || 0) >= 2;
 const gameStars = (p, g) => gstate(p, g).best.reduce((a, b) => a + (b || 0), 0);
 
+/* ---------- play time: a daily limit and a "timer from now", set by grown-ups ----------
+   p.days = { 'YYYY-MM-DD': seconds played }, p.time = { limit, day, extra, timerDay, timerEnd, off }.
+   Time only counts while a child's screen is open and visible. When it runs out, Tara naps and the games lock. */
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const usedSecs = (p, day = dayKey()) => (p.days && p.days[day]) || 0;
+const ptime = p => (p.time = p.time || {});
+function allowSecs(p) {
+  const t = ptime(p), d = dayKey();
+  if (t.off === d) return Infinity;
+  let a = t.limit ? t.limit * 60 + (t.day === d ? t.extra || 0 : 0) : Infinity;
+  if (t.timerDay === d && t.timerEnd != null) a = Math.min(a, t.timerEnd);
+  return a;
+}
+const leftSecs = p => allowSecs(p) - usedSecs(p);
+const isLocked = p => leftSecs(p) <= 0;
+const fmtMins = s => { const m = Math.round(s / 60); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`; };
+function setTimer(p, mins) { const t = ptime(p); t.timerDay = dayKey(); t.timerEnd = usedSecs(p) + mins * 60; t.off = null; }
+function giveMore(p, mins) {
+  const t = ptime(p), d = dayKey(), u = usedSecs(p);
+  if (t.timerDay === d && t.timerEnd != null) t.timerEnd = Math.max(u, t.timerEnd) + mins * 60;
+  if (t.limit) { const base = t.limit * 60, cur = base + (t.day === d ? t.extra || 0 : 0); t.day = d; t.extra = Math.max(u, cur) + mins * 60 - base; }
+}
+let kidScreen = false, inGame = false, warned = '', lastTick = Date.now(), lastStore = 0;
+const kidMode = (on, game = false) => { kidScreen = on; inGame = game; };
+function clockText(p) { const l = leftSecs(p); return l <= 0 ? '0 min' : l < 60 ? 'under 1 min' : `${Math.ceil(l / 60)} min`; }
+const clockChip = p => (allowSecs(p) === Infinity ? null
+  : h('span', { class: 'chip clock' + (leftSecs(p) <= 120 ? ' low' : ''), id: 'clock', title: 'Play time left today', 'aria-label': 'Play time left' }, '⏳ ', h('b', {}, clockText(p))));
+setInterval(() => {
+  const now = Date.now(), dt = Math.min(15, (now - lastTick) / 1000); lastTick = now;
+  const p = me();
+  if (!p || !kidScreen || document.visibilityState !== 'visible') return;
+  const d = dayKey(); p.days = p.days || {}; p.days[d] = (p.days[d] || 0) + dt;
+  const keys = Object.keys(p.days).sort(); while (keys.length > 14) delete p.days[keys.shift()];
+  if (now - lastStore > 30000) { lastStore = now; p.updatedAt = now; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ } }
+  const c = $('#clock'); if (c) { c.querySelector('b').textContent = clockText(p); c.classList.toggle('low', leftSecs(p) <= 120); }
+  const left = leftSecs(p), tag = p.id + d + allowSecs(p);
+  if (left > 0 && left <= 120 && !inGame && warned !== tag) { warned = tag; say(`${p.name}, two more minutes, then it's time for a break.`); }
+  if (left <= 0 && (!inGame || left <= -120)) lockScreen();
+}, 5000);
+
 /* ---------- screen + mascot ---------- */
 const app = $('#app');
 let run = 0, lastSaid = '';
@@ -124,7 +164,7 @@ function confetti(n = 80) {
 
 /* ---------- who's playing ---------- */
 function who() {
-  run++; stop();
+  run++; stop(); kidMode(false);
   if (!S.profiles.length) return editChild(null, true);
   screen(
     top(h('a', { class: 'logo', href: '../', 'aria-label': 'Goan Kids Club home' }, h('img', { src: 'icons/icon-180.png', alt: '' })), brand(), [iconBtn('👪', 'Grown-ups', parentGate)]),
@@ -132,13 +172,13 @@ function who() {
     mascot("Who's playing today?"),
     h('div', { class: 'kids' },
       S.profiles.map(p => h('button', { class: 'kid', onclick: () => { S.current = p.id; save(); sfx.tap(); hub(); } },
-        h('span', { class: 'av' }, p.avatar), h('b', {}, p.name), h('small', {}, BANDS[p.band - 1].name + ' · ' + BANDS[p.band - 1].age))),
+        h('span', { class: 'av' }, isLocked(p) ? '😴' : p.avatar), h('b', {}, p.name), h('small', {}, isLocked(p) ? 'Break time' : BANDS[p.band - 1].name + ' · ' + BANDS[p.band - 1].age))),
       S.profiles.length < 8 ? h('button', { class: 'kid add', onclick: () => editChild(null) }, h('span', { class: 'av' }, '➕'), h('b', {}, 'Add a child')) : null));
   say("Who's playing today?");
 }
 
 function editChild(p, first = false) {
-  run++; stop();
+  run++; stop(); kidMode(false);
   const d = p ? { ...p } : { name: '', avatar: pick(AVATARS), band: 2 };
   const name = h('input', { class: 'nameinput', placeholder: "Child's first name", maxlength: 14, value: d.name, autocomplete: 'off' });
   const avs = h('div', { class: 'avpick' }, AVATARS.map(a => h('button', { class: 'av' + (a === d.avatar ? ' on' : ''), onclick: e => { d.avatar = a; avs.querySelectorAll('.av').forEach(x => x.classList.toggle('on', x === e.currentTarget)); sfx.tap(); } }, a)));
@@ -170,12 +210,14 @@ let lastCat = 'all';
 function hub(greet = false, cat = lastCat) {
   run++; stop(); lastCat = cat;
   const p = me(); if (!p) return who();
+  if (isLocked(p)) return lockScreen();
+  kidMode(true);
   const avail = GAMES.filter(g => g.minBand <= p.band);
   const list = avail.filter(g => cat === 'all' || g.cat === cat);
   const cats = CATS.filter(c => c.id === 'all' || avail.some(g => g.cat === c.id));
   screen(
     top(h('button', { class: 'ibtn av', 'aria-label': 'Change child', onclick: who }, p.avatar), `Hi, ${p.name}!`,
-      [starChip(p), iconBtn('📒', 'Sticker book', () => stickers()), iconBtn('👪', 'Grown-ups', parentGate)]),
+      [clockChip(p), starChip(p), iconBtn('📒', 'Sticker book', () => stickers()), iconBtn('👪', 'Grown-ups', parentGate)]),
     village(p),
     mascot(''),
     h('nav', { class: 'cats' }, cats.map(c => h('button', { class: 'cat' + (c.id === cat ? ' on' : ''), onclick: () => { sfx.tap(); hub(false, c.id); } }, c.icon + ' ' + c.label))),
@@ -194,10 +236,12 @@ function hub(greet = false, cat = lastCat) {
 function stagesScreen(g) {
   run++; stop();
   const p = me(), gs = gstate(p, g);
+  if (isLocked(p)) return lockScreen();
+  kidMode(true);
   let rec = g.stages.findIndex((_, s) => unlocked(p, g, s) && (gs.best[s] || 0) < 3);
   if (rec < 0) rec = g.stages.length - 1;
   screen(
-    top(iconBtn('⬅️', 'All games', () => hub()), g.icon + ' ' + g.title, [starChip(p)]),
+    top(iconBtn('⬅️', 'All games', () => hub()), g.icon + ' ' + g.title, [clockChip(p), starChip(p)]),
     mascot(g.desc),
     h('div', { class: 'stages' }, g.stages.map((name, s) => {
       const open = unlocked(p, g, s), best = gs.best[s] || 0;
@@ -211,11 +255,13 @@ function stagesScreen(g) {
 /* ---------- play a round ---------- */
 async function play(g, stage) {
   const my = ++run; stop();
+  if (isLocked(me())) return lockScreen();
+  kidMode(true, true);
   const p = me(), rounds = g.board ? 0 : (g.roundsFor ? g.roundsFor(stage) : g.rounds || 5);
   const board = h('main', { class: 'board' });
   const dots = h('div', { class: 'dots' }, range(1, rounds).map(() => h('i')));
   screen(
-    top(iconBtn('✖', 'Stop playing', () => stagesScreen(g), 'close'), `${g.icon} ${g.title}`, [h('span', { class: 'chip' }, `Stage ${stage + 1}`)]),
+    top(iconBtn('✖', 'Stop playing', () => stagesScreen(g), 'close'), `${g.icon} ${g.title}`, [clockChip(p), h('span', { class: 'chip' }, `Stage ${stage + 1}`)]),
     mascot(''), rounds ? dots : null, board);
   let mistakes = 0;
   const ctx = {
@@ -250,7 +296,8 @@ function finish(g, stage, stars, secs) {
   gs.best[stage] = Math.max(gs.best[stage] || 0, stars); gs.plays++;
   p.stars += stars; p.total += stars; p.mins = (p.mins || 0) + secs / 60;
   p.log.unshift({ g: g.id, s: stage, st: stars, t: Date.now() }); p.log = p.log.slice(0, 80);
-  save(p);
+  save(p); kidMode(true);
+  if (isLocked(p)) return lockScreen(stars);
   const hasNext = stage + 1 < g.stages.length, nowOpen = hasNext && unlocked(p, g, stage + 1);
   const canBuy = p.stars >= 5 && p.stickers.length < STICKERS.length * 12;
   screen(
@@ -271,10 +318,31 @@ function finish(g, stage, stars, secs) {
   say(`${stars === 3 ? 'Superstar' : 'Well done'}, ${p.name}! You earned ${stars} star${stars > 1 ? 's' : ''}.${unlockMsg}${canBuy ? ' You can get a new sticker!' : ''}`);
 }
 
+/* ---------- break time (play time is used up) ---------- */
+function lockScreen(stars = 0) {
+  run++; stop(); kidMode(false);
+  const p = me(); if (!p) return who();
+  if (!isLocked(p)) return hub();
+  const mins = Math.max(1, Math.round(usedSecs(p) / 60));
+  screen(
+    top(h('button', { class: 'ibtn av', 'aria-label': 'Change child', onclick: who }, p.avatar), `Break time, ${p.name}`, [iconBtn('👪', 'Grown-ups', parentGate)]),
+    h('div', { class: 'result nap' },
+      h('div', { class: 'napturtle' }, h('span', {}, '🐢'), h('i', {}, 'z'), h('i', {}, 'z'), h('i', {}, 'Z')),
+      h('h2', {}, 'Time for a break!'),
+      stars ? h('p', {}, `You earned ${stars} star${stars > 1 ? 's' : ''} in your last game. You have ${p.stars} in your star jar!`) : null,
+      h('p', { class: 'muted' }, `You played for ${mins} minute${mins > 1 ? 's' : ''} today. Tara is having a little nap. Go and run, draw or read a book, and come back later!`),
+      mascot(''),
+      h('button', { class: 'btn ghost', onclick: () => { sfx.tap(); parentGate(); } }, '👪 Grown-ups: add more time')));
+  sfx.win();
+  say(`${stars ? `Well done, ${p.name}! You earned ${stars} star${stars > 1 ? 's' : ''}. ` : ''}It's time for a break, ${p.name}. Tara is having a nap. See you later!`);
+}
+
 /* ---------- sticker book (spend stars) ---------- */
 function stickers(page = 0) {
   run++; stop();
   const p = me();
+  if (isLocked(p)) return lockScreen();
+  kidMode(true);
   const pg = STICKERS[page];
   screen(
     top(iconBtn('⬅️', 'All games', () => hub()), '📒 Sticker book', [starChip(p)]),
@@ -360,8 +428,45 @@ function cloudCard() {
   return box;
 }
 
+/* Grown-ups card: time played (today and the last 7 days), daily limit, timer from now, add more time. */
+function timeCard() {
+  const box = h('section', { class: 'card timecard' }, h('h3', {}, '⏳ Play time'));
+  const btn = (label, fn, cls = 'btn ghost sm') => h('button', { class: cls, onclick: () => { fn(); render(); } }, label);
+  const render = () => {
+    box.querySelectorAll(':scope > :not(h3)').forEach(n => n.remove());
+    box.append(h('p', { class: 'muted small' }, 'Time only counts while a child is playing with the screen open. When their time is up, Tara has a nap and the games lock until a grown-up adds more time, or until tomorrow.'));
+    if (!S.profiles.length) { box.append(h('p', { class: 'muted' }, 'Add a child first.')); return; }
+    const days = range(0, 6).map(i => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d; });
+    for (const p of S.profiles) {
+      const t = ptime(p), u = usedSecs(p), a = allowSecs(p), left = a - u, d = dayKey();
+      const week = days.map(x => usedSecs(p, dayKey(x))), top7 = Math.max(600, ...week);
+      const timerOn = t.timerDay === d && t.timerEnd != null && t.off !== d;
+      const change = fn => () => { fn(); save(p); };
+      const limitSel = h('select', { class: 'sel', 'aria-label': `Daily limit for ${p.name}`, onchange: e => { t.limit = +e.target.value; t.off = null; save(p); render(); } },
+        [0, 10, 15, 20, 30, 45, 60, 90, 120].map(m => h('option', { value: String(m), selected: (t.limit || 0) === m }, m ? `${m} minutes a day` : 'No daily limit')));
+      box.append(h('div', { class: 'trow' },
+        h('div', { class: 'thead' }, h('span', { class: 'av' }, p.avatar), h('b', {}, p.name),
+          h('span', { class: 'tstat' }, `Today ${fmtMins(u)} · last 7 days ${fmtMins(week.reduce((x, y) => x + y, 0))}`)),
+        h('div', { class: 'week', 'aria-hidden': 'true' }, days.map((x, i) => h('div', { class: 'wd' + (i === 6 ? ' today' : '') },
+          h('i', { style: `height:${Math.max(3, week[i] / top7 * 100)}%`, title: fmtMins(week[i]) }), h('small', {}, i === 6 ? 'Today' : x.toLocaleDateString('en-GB', { weekday: 'short' }))))),
+        h('div', { class: 'setrow' }, h('span', { class: 'lbl' }, 'Every day'), limitSel),
+        h('div', { class: 'setrow' }, h('span', { class: 'lbl' }, 'Timer from now'),
+          [10, 15, 20, 30].map(m => btn(`${m} min`, change(() => setTimer(p, m)), 'btn ghost sm' + (timerOn && t.timerEnd - u > 0 && Math.round((t.timerEnd - u) / 60) === m ? ' on' : ''))),
+          timerOn ? btn('Cancel timer', change(() => { t.timerEnd = null; })) : null),
+        h('p', { class: 'tleft' + (a !== Infinity && left <= 0 ? ' up' : '') },
+          a === Infinity ? (t.off === d ? 'No limit for the rest of today.' : 'No limit set.') : left <= 0 ? '🔒 Time is up. The games are locked.' : `${clockText(p)} left today${timerOn ? ' (timer)' : ''}.`),
+        a !== Infinity || t.off === d ? h('div', { class: 'setrow' },
+          a !== Infinity ? btn('+10 minutes', change(() => giveMore(p, 10)), 'btn sm') : null,
+          a !== Infinity ? btn('+20 minutes', change(() => giveMore(p, 20))) : null,
+          a !== Infinity ? btn('No limit for the rest of today', change(() => { t.off = d; })) : btn('Turn limits back on today', change(() => { t.off = null; }))) : null));
+    }
+  };
+  render();
+  return box;
+}
+
 function parentArea(sel = S.current) {
-  run++; stop();
+  run++; stop(); kidMode(false);
   const st = S.settings;
   const kid = S.profiles.find(p => p.id === sel) || S.profiles[0];
   const toggle = (label, key) => h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: st[key] ? true : null, onchange: e => { st[key] = e.target.checked; save(); } }), label);
@@ -372,10 +477,11 @@ function parentArea(sel = S.current) {
     h('div', { class: 'parent' },
       card('Children', h('div', { class: 'plist' }, S.profiles.map(p => h('div', { class: 'prow' + (p === kid ? ' on' : '') },
         h('button', { class: 'pname', onclick: () => parentArea(p.id) }, h('span', { class: 'av' }, p.avatar), h('span', {}, h('b', {}, p.name), h('small', {}, `Age ${BANDS[p.band - 1].age} · ${BANDS[p.band - 1].uk}`))),
-        h('span', { class: 'pstat' }, `⭐ ${p.total} earned · 📒 ${p.stickers.length} · ⏱ ${Math.round(p.mins || 0)} min`),
+        h('span', { class: 'pstat' }, `⭐ ${p.total} earned · 📒 ${p.stickers.length} · ⏱ today ${fmtMins(usedSecs(p))}${isLocked(p) ? ' · 🔒 break time' : ''}`),
         h('button', { class: 'btn ghost sm', onclick: () => editChild(p) }, 'Edit'),
         h('button', { class: 'btn ghost sm danger', onclick: () => { if (confirm(`Delete ${p.name} and all their progress? This cannot be undone.`)) { S.profiles = S.profiles.filter(x => x !== p); S.deleted.push(p.id); if (S.current === p.id) S.current = S.profiles[0]?.id || null; save(); parentArea(); } } }, 'Delete')))),
         h('button', { class: 'btn sm', onclick: () => editChild(null) }, '➕ Add a child')),
+      timeCard(),
       kid ? card(`${kid.name}'s progress`, h('table', { class: 'prog' },
         h('tr', {}, h('th', {}, 'Game'), h('th', {}, 'Stages (best stars)'), h('th', {}, 'Plays')),
         GAMES.map(g => { const gs = kid.games[g.id] || { best: [], plays: 0 }; return h('tr', { class: g.minBand > kid.band ? 'dim' : '' },
