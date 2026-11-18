@@ -398,3 +398,13 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 .btn.wa { background: #25D366; color: #fff; box-shadow: 0 4px 0 #1A9E4B; text-decoration: none; display: inline-block; }
 @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-5px) rotate(-2deg); } 95% { transform: translateY(0) rotate(2deg); } }
 @media (prefers-reduced-motion: reduce) { .treat { animation: none; } }
+
+/* Keeping the family code safe */
+.savecode { margin: 10px 0 4px; }
+.savemsg { background: #FFE9DF; color: #8A2E12; border-radius: 12px; padding: 8px 12px; font-weight: 600; margin: 0 0 10px; }
+.savebtns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: inherit; }
+.savebtns .btn { text-decoration: none; }
+.savenote { color: var(--good); font-weight: 600; min-height: 1.2em; margin: 8px 0 0; font-size: 15px; }
+.savemodal { max-width: 440px !important; }
+.savemodal .savebtns { justify-content: center; }
+.savemodal .savebtns .btn { flex: 1 1 100%; }

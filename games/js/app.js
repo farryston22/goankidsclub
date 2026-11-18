@@ -402,6 +402,88 @@ function parentGate() {
   document.body.append(m); inp.focus();
 }
 
+/* ---------- keeping the family code safe: copy, WhatsApp to yourself, picture card, reminder ---------- */
+const SAVE_MSG = "Please save your code now. It's the only way to get your progress back.";
+async function copyCode(code) {
+  try { await navigator.clipboard.writeText(code); return true; } catch (e) {
+    const t = h('textarea', { style: 'position:fixed;opacity:0' }); t.value = code; document.body.append(t); t.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e2) { /* ignore */ } t.remove(); return ok;
+  }
+}
+const waLink = code => 'https://wa.me/?text=' + encodeURIComponent(`My Goan Kids Club family code: ${code}\n\nTo load our progress on another device: goankidsclub.com/games → Grown-ups → Save progress online → type this code. Keep it private.`);
+const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+/** Draw a Goan-tile card with the code and return it as a PNG blob. */
+async function codeCard(code) {
+  const W = 1000, H = 620, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  try { await document.fonts.load('700 60px Fredoka'); } catch (e) { /* system font */ }
+  x.fillStyle = '#FDFBF3'; x.fillRect(0, 0, W, H);
+  // azulejo border: blue and white tiles with a little flower
+  const T = 44;
+  const tileAt = (tx, ty) => {
+    x.fillStyle = '#1D4F91'; x.fillRect(tx, ty, T, T); x.fillStyle = '#fff'; x.fillRect(tx + 3, ty + 3, T - 6, T - 6);
+    x.fillStyle = '#1D4F91'; x.beginPath(); x.arc(tx + T / 2, ty + T / 2, 9, 0, 7); x.fill();
+    x.fillStyle = '#4EA6DC'; [[0, 0], [T, 0], [0, T], [T, T]].forEach(([dx, dy]) => { x.beginPath(); x.arc(tx + dx, ty + dy, 10, 0, 7); x.fill(); });
+    x.fillStyle = '#F3B72B'; x.beginPath(); x.arc(tx + T / 2, ty + T / 2, 4, 0, 7); x.fill();
+  };
+  for (let i = 0; i * T < W; i++) { tileAt(i * T, 0); tileAt(i * T, H - T); }
+  for (let j = 1; (j + 1) * T < H; j++) { tileAt(0, j * T); tileAt(W - T, j * T); }
+  x.save(); x.beginPath(); x.rect(T, T, W - 2 * T, H - 2 * T); x.clip(); x.fillStyle = '#FDFBF3'; x.fillRect(T, T, W - 2 * T, H - 2 * T); x.restore();
+  try { const logo = await loadImg('icons/icon-180.png'); x.save(); x.beginPath(); x.arc(150, 150, 70, 0, 7); x.clip(); x.drawImage(logo, 80, 80, 140, 140); x.restore(); } catch (e) { /* no logo */ }
+  const F = (w, px) => `${w} ${px}px Fredoka, "Trebuchet MS", sans-serif`;
+  x.textBaseline = 'alphabetic';
+  // wordmark: G o a n in logo colours
+  let gx = 245; x.font = F(700, 64);
+  [['G', '#1D4F91'], ['o', '#F3B72B'], ['a', '#E5572B'], ['n', '#3A8A3F']].forEach(([ch, col]) => { x.fillStyle = col; x.fillText(ch, gx, 150); gx += x.measureText(ch).width; });
+  x.fillStyle = '#142B57'; x.fillText(' Kids Club', gx, 150);
+  x.font = F(600, 26); x.fillStyle = '#5E6787'; x.fillText('Our family code for saved progress', 248, 192);
+  // code box
+  x.fillStyle = '#FFF6DA'; x.strokeStyle = '#F8C33A'; x.lineWidth = 6; x.setLineDash([16, 10]);
+  x.beginPath(); x.roundRect ? x.roundRect(90, 255, W - 180, 140, 26) : x.rect(90, 255, W - 180, 140); x.fill(); x.stroke(); x.setLineDash([]);
+  let px = 72; x.font = F(700, px); while (x.measureText(code).width > W - 240 && px > 30) { px -= 2; x.font = F(700, px); }
+  x.fillStyle = '#1D4F91'; x.textAlign = 'center'; x.fillText(code, W / 2, 325 + px / 3);
+  x.font = F(500, 26); x.fillStyle = '#142B57';
+  x.fillText('On another device: goankidsclub.com/games → Grown-ups', W / 2, 450);
+  x.fillText('→ Save progress online → type this code', W / 2, 488);
+  x.font = F(500, 21); x.fillStyle = '#5E6787';
+  x.fillText(`Keep it private, like a password · saved ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, W / 2, 536);
+  x.textAlign = 'left';
+  return new Promise(ok => c.toBlob(ok, 'image/png'));
+}
+async function savePicture(code, note) {
+  note.textContent = 'Making your picture…';
+  const blob = await codeCard(code), name = 'goan-kids-club-family-code.png';
+  const file = typeof File === 'function' ? new File([blob], name, { type: 'image/png' }) : null;
+  // iPad / iPhone / Android: the share sheet has "Save Image" (goes to Photos). Elsewhere: download the file.
+  if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.maxTouchPoints > 0) {
+    try { await navigator.share({ files: [file], title: 'Goan Kids Club family code' }); note.textContent = 'Saved ✓ Check your photos.'; return; }
+    catch (e) { if (e && e.name === 'AbortError') { note.textContent = ''; return; } }
+  }
+  const url = URL.createObjectURL(blob), a = h('a', { href: url, download: name });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  note.textContent = 'Picture saved ✓ Check your downloads.';
+}
+/** The four ways to keep the code: copy, WhatsApp to yourself, picture, and the reminder text. */
+function saveCodeTools(code) {
+  const note = h('p', { class: 'savenote', role: 'status' });
+  return h('div', { class: 'savecode' },
+    h('p', { class: 'savemsg' }, '⚠️ ' + SAVE_MSG),
+    h('div', { class: 'savebtns' },
+      h('button', { class: 'btn sm', onclick: async () => { note.textContent = (await copyCode(code)) ? 'Copied ✓ Paste it into your Notes.' : 'Could not copy. Please write it down.'; } }, '📋 Copy code'),
+      h('a', { class: 'btn sm wa', href: waLink(code), target: '_blank', rel: 'noopener', onclick: () => { note.textContent = 'In WhatsApp, pick "Message yourself" (or a grown-up you trust) and send.'; } }, '💬 Send to myself on WhatsApp'),
+      h('button', { class: 'btn sm ghost', onclick: () => savePicture(code, note).catch(() => { note.textContent = 'Could not make the picture. Please take a screenshot instead.'; }) }, '🖼 Save as a picture')),
+    note);
+}
+/** Shown once, straight after a grown-up turns on online saving. */
+function saveCodeReminder(code) {
+  const m = h('div', { class: 'modal', onclick: e => { if (e.target === m) m.remove(); } },
+    h('div', { class: 'card center savemodal' }, h('h3', {}, '☁️ Online saving is on!'),
+      h('p', {}, 'Your family code:'), h('div', { class: 'famcode' }, code),
+      saveCodeTools(code),
+      h('button', { class: 'btn', style: 'margin-top:10px', onclick: () => m.remove() }, "I've saved it")));
+  document.body.append(m);
+}
+
 /* Grown-ups card for the optional family code. */
 function cloudCard() {
   const box = h('section', { class: 'card cloud' }, h('h3', {}, '☁️ Save progress online (optional)'));
@@ -416,7 +498,7 @@ function cloudCard() {
         h('div', { class: 'setrow' }, h('button', {
           class: 'btn sm', onclick: async () => {
             S.sync.code = newCode(); track('cloudon'); msg.textContent = 'Saving…'; render();
-            const ok = await syncNow(); msg.textContent = ok ? 'Saved online.' : 'Could not reach the internet. It will try again later.'; render();
+            const ok = await syncNow(); msg.textContent = ok ? 'Saved online.' : 'Could not reach the internet. It will try again later.'; render(); saveCodeReminder(S.sync.code);
           },
         }, 'Turn on online saving')),
         h('p', { class: 'small' }, 'Already have a family code from another device? Type it here:'),
@@ -436,8 +518,8 @@ function cloudCard() {
     }
     const when = S.sync.last ? new Date(S.sync.last).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : 'not yet';
     box.append(
-      h('p', {}, 'Your family code:'), h('div', { class: 'famcode' }, S.sync.code),
-      h('p', { class: 'small' }, 'Write it down or take a photo. Type it on another device (Grown-ups → Save progress online) to load the same progress. Anyone with this code can see your children\'s first names and progress, so keep it private.'),
+      h('p', {}, 'Your family code:'), h('div', { class: 'famcode' }, S.sync.code), saveCodeTools(S.sync.code),
+      h('p', { class: 'small' }, 'Type it on another device (Grown-ups → Save progress online) to load the same progress. Anyone with this code can see your children\'s first names and progress, so keep it private.'),
       h('p', { class: 'muted small' }, `Last saved online: ${when}${S.sync.status === 'offline' ? ' (offline, will retry)' : ''}`),
       h('div', { class: 'setrow' },
         h('button', { class: 'btn sm', onclick: async () => { msg.textContent = 'Saving…'; const ok = await syncNow(); msg.textContent = ok ? 'Saved.' : 'Could not reach the internet.'; render(); } }, 'Save now'),
