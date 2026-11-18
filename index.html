@@ -33,6 +33,39 @@
     padding: 18px 40px; border-radius: 999px; box-shadow: 0 6px 0 #C9901B; }
   a.play:active { transform: translateY(3px); box-shadow: 0 3px 0 #C9901B; }
   small { display: block; margin-top: 26px; color: var(--muted); }
+  /* Support box: steaming cup whose coffee slowly runs low */
+  .support { margin: 34px auto 0; max-width: 520px; width: 100%; background: #fff; border-radius: 26px; padding: 22px 18px 20px;
+    border: 4px solid var(--ring); box-shadow: 0 6px 0 #E8DAB4; position: relative; overflow: hidden; }
+  .support:before { content: ''; position: absolute; inset: 0 0 auto 0; height: 14px;
+    background: repeating-linear-gradient(90deg, var(--blue) 0 14px, #fff 14px 18px, var(--sea) 18px 32px, #fff 32px 36px); opacity: .9; }
+  .support h2 { margin: 10px 0 2px; font-size: 26px; color: var(--blue); }
+  .support .joke { color: var(--navy); margin: 6px auto 12px; font-size: 18px; }
+  .cupwrap { position: relative; width: 120px; height: 120px; margin: 6px auto 0; animation: wobble 3s ease-in-out infinite; }
+  .cupwrap svg { width: 100%; height: 100%; overflow: visible; }
+  .liquid { animation: drain 14s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+  .steam path { fill: none; stroke: #C9CED9; stroke-width: 5; stroke-linecap: round; opacity: 0; animation: steam 2.6s ease-in infinite; }
+  .steam path:nth-child(2) { animation-delay: .8s; } .steam path:nth-child(3) { animation-delay: 1.6s; }
+  .level { font-weight: 600; color: var(--orange); font-size: 15px; margin: 2px 0 12px; }
+  .level b { display: inline-block; animation: blink 1.6s steps(2) infinite; }
+  .treats { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .treats a { flex: 1 1 140px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: var(--navy);
+    background: #FFF6DA; border: 3px solid var(--ring); border-radius: 20px; padding: 10px 8px; font-weight: 600; box-shadow: 0 4px 0 #E8C66A;
+    transition: transform .15s; animation: nudge 5s ease-in-out infinite; }
+  .treats a:nth-child(2) { animation-delay: .5s; } .treats a:nth-child(3) { animation-delay: 1s; }
+  .treats a:hover { transform: translateY(-4px) rotate(-2deg); } .treats a:active { transform: translateY(2px); box-shadow: 0 2px 0 #E8C66A; }
+  .treats .e { font-size: 34px; line-height: 1.1; } .treats .p { font-size: 22px; color: var(--blue); font-weight: 700; }
+  .treats small { margin: 0; font-size: 14px; color: var(--muted); }
+  .support .any { display: inline-block; margin-top: 12px; color: var(--blue); font-weight: 600; }
+  .support .fine { font-size: 13px; margin: 10px 0 0; }
+  .wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; background: #25D366; color: #fff; text-decoration: none; font-weight: 700;
+    padding: 12px 22px; border-radius: 999px; box-shadow: 0 4px 0 #1A9E4B; }
+  .wa:active { transform: translateY(2px); box-shadow: 0 2px 0 #1A9E4B; }
+  @keyframes wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes drain { 0%, 8% { transform: scaleY(1); } 80%, 92% { transform: scaleY(.18); } 100% { transform: scaleY(1); } }
+  @keyframes steam { 0% { opacity: 0; transform: translateY(8px); } 30% { opacity: .9; } 100% { opacity: 0; transform: translateY(-26px); } }
+  @keyframes blink { 50% { opacity: .35; } }
+  @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-5px) rotate(-2deg); } 95% { transform: translateY(0) rotate(2deg); } }
+  @media (prefers-reduced-motion: reduce) { .cupwrap, .liquid, .steam path, .level b, .treats a { animation: none !important; } .steam path { opacity: .7; } }
 </style>
 </head>
 <body>
@@ -44,6 +77,31 @@
   </h1>
   <p>Fun learning games for ages 3 to 6: numbers, phonics, shapes, animals, Konkani and Goan heritage.</p>
   <a class="play" href="games/">▶ Play games</a>
+  <section class="support" aria-labelledby="sup">
+    <div class="cupwrap" aria-hidden="true">
+      <svg viewBox="0 0 120 120">
+        <g class="steam"><path d="M44 30 q-6 -9 0 -18"/><path d="M60 30 q-6 -9 0 -18"/><path d="M76 30 q-6 -9 0 -18"/></g>
+        <path d="M92 52 h8 a14 14 0 0 1 0 28 h-8" fill="none" stroke="#1D4F91" stroke-width="7"/>
+        <clipPath id="cupclip"><path d="M26 40 h70 l-7 58 a10 10 0 0 1 -10 9 h-36 a10 10 0 0 1 -10 -9 z"/></clipPath>
+        <path d="M26 40 h70 l-7 58 a10 10 0 0 1 -10 9 h-36 a10 10 0 0 1 -10 -9 z" fill="#FDFBF3"/>
+        <g clip-path="url(#cupclip)"><rect class="liquid" x="20" y="46" width="82" height="64" fill="#8A5A3B"/></g>
+        <path d="M26 40 h70 l-7 58 a10 10 0 0 1 -10 9 h-36 a10 10 0 0 1 -10 -9 z" fill="none" stroke="#1D4F91" stroke-width="7" stroke-linejoin="round"/>
+        <path d="M38 70 h46" stroke="#F3B72B" stroke-width="5" stroke-dasharray="6 5"/>
+        <ellipse cx="61" cy="112" rx="44" ry="5" fill="#E5572B" opacity=".25"/>
+      </svg>
+    </div>
+    <h2 id="sup">Support Goan Kids Club</h2>
+    <p class="level">Tara's coffee level: <b>getting low!</b> ☕🐢</p>
+    <p class="joke">These games run on code, love and coffee. Two are free.<br><b>Buy me the third</b> and help keep Goan Kids Club free and ad-free!</p>
+    <div class="treats">
+      <a href="https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A" target="_blank" rel="noopener"><span class="e">☕</span><span class="p">£3</span><small>a chai and a poi</small></a>
+      <a href="https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A" target="_blank" rel="noopener"><span class="e">🍰</span><span class="p">£5</span><small>a slice of bebinca</small></a>
+      <a href="https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A" target="_blank" rel="noopener"><span class="e">🍛</span><span class="p">£10</span><small>fish curry rice</small></a>
+    </div>
+    <a class="any" href="https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A" target="_blank" rel="noopener">or give any amount on PayPal →</a>
+    <p class="fine">Grown-ups only. Choose the amount on PayPal. Dev borem korum!</p>
+    <a class="wa" href="https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20" target="_blank" rel="noopener">💬 Requests or ideas? WhatsApp us</a>
+  </section>
   <small>No ads · No sign-up · Works on iPad, phone and computer · <a href="privacy.html" style="color:inherit">Privacy</a></small>
 </body>
 </html>

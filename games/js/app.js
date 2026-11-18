@@ -496,6 +496,12 @@ function parentArea(sel = S.current) {
       cloudCard(),
       card('Privacy', h('p', {}, 'No ads, no sign-up, no tracking. Progress is saved on this device. It is only sent online if you turn on "Save progress online" above. '),
         h('a', { href: '../privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy notice')),
+      h('section', { class: 'card supportcard' }, h('h3', {}, '☕ Support Goan Kids Club'),
+        h('p', {}, 'These games run on code, love and coffee. Two are free. ', h('b', {}, 'Buy me the third'), ' and help keep Goan Kids Club free and ad-free!'),
+        h('div', { class: 'treatrow' }, [['☕', '£3', 'a chai and a poi'], ['🍰', '£5', 'a slice of bebinca'], ['🍛', '£10', 'fish curry rice']].map(([e, p, t]) =>
+          h('a', { class: 'treat', href: "https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A", target: '_blank', rel: 'noopener' }, h('span', { class: 'e' }, e), h('b', {}, p), h('small', {}, t)))),
+        h('p', { class: 'muted small' }, 'You choose the amount on PayPal. Dev borem korum!'),
+        h('a', { class: 'btn sm wa', href: "https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20", target: '_blank', rel: 'noopener' }, '💬 Requests or ideas? WhatsApp us')),
       card('What children learn', h('ul', { class: 'learn' },
         h('li', {}, '🔢 Numbers: counting to 20, comparing, number line, adding and taking away, number bonds to 10, UK coins (EYFS Number, Year 1).'),
         h('li', {}, '🔤 Letters: UK phonics in Letters and Sounds order (s a t p…), first sounds, blending words, tracing, ABC order and capitals.'),

@@ -387,3 +387,14 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 .sel { font: inherit; font-size: 17px; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--ink); }
 .tleft { font-weight: 600; color: var(--palm); margin: 6px 0; }
 .tleft.up { color: var(--orange); }
+
+/* Grown-ups: support card */
+.supportcard { border: 3px solid var(--ring); }
+.treatrow { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
+.treat { flex: 1 1 120px; display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--ink); background: #FFF6DA;
+  border: 3px solid var(--ring); border-radius: 18px; padding: 8px; box-shadow: 0 4px 0 #E8C66A; animation: nudge 5s ease-in-out infinite; }
+.treat:nth-child(2) { animation-delay: .5s; } .treat:nth-child(3) { animation-delay: 1s; }
+.treat .e { font-size: 30px; } .treat b { color: var(--indigo); font-size: 20px; } .treat small { color: var(--muted); font-size: 13px; }
+.btn.wa { background: #25D366; color: #fff; box-shadow: 0 4px 0 #1A9E4B; text-decoration: none; display: inline-block; }
+@keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-5px) rotate(-2deg); } 95% { transform: translateY(0) rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) { .treat { animation: none; } }
