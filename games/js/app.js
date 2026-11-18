@@ -98,7 +98,7 @@ function who() {
   run++; stop();
   if (!S.profiles.length) return editChild(null, true);
   screen(
-    top(h('a', { class: 'logo', href: '../', 'aria-label': 'Goan Kids Club home' }, '🌴'), brand(), [iconBtn('👪', 'Grown-ups', parentGate)]),
+    top(h('a', { class: 'logo', href: '../', 'aria-label': 'Goan Kids Club home' }, h('img', { src: 'icons/icon-180.png', alt: '' })), brand(), [iconBtn('👪', 'Grown-ups', parentGate)]),
     village(null), tagline(),
     mascot("Who's playing today?"),
     h('div', { class: 'kids' },
@@ -124,7 +124,7 @@ function editChild(p, first = false) {
   };
   name.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn(); });
   screen(
-    top(first ? h('span', { class: 'logo' }, '🌴') : iconBtn('⬅️', 'Back', () => (p ? parentArea() : who())), p ? 'Edit child' : first ? brand() : 'Add a child'),
+    top(first ? h('span', { class: 'logo' }, h('img', { src: 'icons/icon-180.png', alt: '' })) : iconBtn('⬅️', 'Back', () => (p ? parentArea() : who())), p ? 'Edit child' : first ? brand() : 'Add a child'),
     first ? village(null) : null, first ? tagline() : null,
     h('div', { class: 'form' },
       first ? h('p', { class: 'lead' }, 'Bem-vindo! Fun learning games for ages 3 to 6: numbers, UK phonics, shapes, thinking, animals, Konkani and Goan heritage. No ads, nothing to sign up for. Grown-ups, please set up your child below.') : null,

@@ -24,7 +24,8 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 /* ---------- header ---------- */
 .top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .ttl { flex: 1; min-width: 0; font-weight: 700; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--indigo); }
-.logo { font-size: 34px; text-decoration: none; }
+.logo { font-size: 34px; text-decoration: none; line-height: 0; flex: none; }
+.logo img { width: 56px; height: 56px; border-radius: 50%; display: block; }
 .brand { font-size: 28px; color: var(--ink); letter-spacing: -.3px; }
 .brand .b1 { color: var(--indigo); } .brand .b2 { color: var(--ochre); } .brand .b3 { color: var(--orange); } .brand .b4 { color: var(--palm); }
 .tagline { text-align: center; letter-spacing: 3px; font-weight: 600; font-size: 15px; color: var(--ink); margin: 2px 0 6px; }
