@@ -1,8 +1,8 @@
 # Goan Kids Club — notes for Claude (maintainer)
 
 Goan Kids Club is a site for Goan children in the UK (ages 3–6), linked to the owner's YouTube channel that teaches
-Konkani and Goan culture. Owner: Farryston (GitHub `farryston22`). Claude maintains the site: when he asks for a
-change, make it, test it in the browser pane, show him what changed, then commit and push to `main`.
+Konkani and Goan culture. Owner: GitHub `farryston22` (never put the owner's real name on the site or in the repo). Claude maintains the site: when the owner asks for a
+change, make it, test it in the browser pane, show the owner what changed, then commit and push to `main`.
 
 ## Stack
 - Plain HTML, CSS and JavaScript (ES modules). **No build step, no npm, no framework.** Keep it that way.
@@ -16,6 +16,14 @@ change, make it, test it in the browser pane, show him what changed, then commit
   can only call `gkc_load` / `gkc_save` / `gkc_delete`. Client: `games/js/sync.js` (merge: newest `updatedAt` per
   child wins, deleted ids are kept as tombstones), keys in `games/js/cloud-config.js` (publishable, safe to be public).
   Children must always be able to play without it.
+- **Admin dashboard** `admin/` (noindex). Reads everything via `gkc_admin(password)`; the password's bcrypt hash is in
+  `admin_secret` (set by SQL, never committed; the owner keeps the password in a local file). Data:
+  - anonymous counts from `games/js/stats.js` → `gkc_track` → `usage_daily` (kinds: active, childday, newchild, play,
+    quit, hour, sticker, lock, cloudon, limit, timer, support, share). No ids or names. Grown-ups can switch it off
+    (Privacy card, `settings.stats`). Never sent from localhost (add `?stats=1` to test).
+  - first names + progress ONLY for children a grown-up ticked in "Share progress" → `gkc_share` → `shared_children`
+    (per-child secret `shareKey`, only its hash stored; unticking or deleting the child calls `gkc_unshare`).
+  Never show names without that opt-in, and keep `privacy.html` in step. Schema: `supabase/migrations/002_dashboard.sql`.
 - **Play time** (Grown-ups → Play time): per child daily limit, "timer from now", +10/+20 min, no limit today, and a
   7-day chart. Counted every 5 s only on child screens while visible (`p.days`, `p.time` in app.js). When time is up
   a game in progress may finish (hard stop 2 min over), then the "Time for a break" nap screen locks the games. Keep `privacy.html` in step with what is stored.
@@ -53,5 +61,5 @@ change, make it, test it in the browser pane, show him what changed, then commit
 4. Test every stage in the browser pane at tablet (768) and phone (375) sizes.
 
 ## Things to check with the owner
-- Konkani spellings in `js/data.js` (`KONKANI`) — he teaches Konkani; ask before changing them.
+- Konkani spellings in `js/data.js` (`KONKANI`) — the owner teaches Konkani; ask before changing them.
 - Recorded audio clips go in `games/audio/` and must be listed in `games/audio/manifest.json`.

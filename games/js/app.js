@@ -9,6 +9,7 @@ import * as W from './games/world.js';
 import * as HG from './games/heritage.js';
 import { villageSVG, tileURL } from './art.js';
 import { cloudReady, newCode, normCode, loadFamily, saveFamily, deleteFamily, merge } from './sync.js';
+import { track, once, statsOn, deviceKind, installed, newShareKey, shareChild, unshareChild } from './stats.js';
 
 export const GAMES = [
   HG.house, HG.poder, HG.tiles, HG.goalife,
@@ -43,7 +44,7 @@ const price = i => (i >= 10 ? 10 : 5);
 
 /* ---------- storage (this device only; nothing is sent anywhere) ---------- */
 const KEY = 'gkc-play-v1';
-const blank = () => ({ profiles: [], deleted: [], current: null, settings: { rate: 0.9, voice: true, sfx: true }, sync: { code: null, last: 0, status: '' } });
+const blank = () => ({ profiles: [], deleted: [], current: null, settings: { rate: 0.9, voice: true, sfx: true, stats: true }, sync: { code: null, last: 0, status: '' } });
 let S;
 try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) { S = blank(); }
 /** Save on this device. Pass the child whose progress changed so online saving knows which copy is newest. */
@@ -51,6 +52,7 @@ const save = changed => {
   if (changed) changed.updatedAt = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ }
   if (changed !== false) queueSync();
+  if (changed && changed.share) queueShare(changed);
 };
 
 /* ---------- optional online saving (family code) ---------- */
@@ -76,6 +78,8 @@ async function syncNow() {
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') queueSync(500); });
 bindSettings(S.settings);
+if (S.settings.stats == null) S.settings.stats = true;
+statsOn(S.settings.stats);
 const me = () => S.profiles.find(p => p.id === S.current);
 const gstate = (p, g) => (p.games[g.id] = p.games[g.id] || { best: [], plays: 0 });
 const unlocked = (p, g, s) => s <= g.start[p.band - 1] || (gstate(p, g).best[s - 1] || 0) >= 2;
@@ -120,6 +124,24 @@ setInterval(() => {
   if (left > 0 && left <= 120 && !inGame && warned !== tag) { warned = tag; say(`${p.name}, two more minutes, then it's time for a break.`); }
   if (left <= 0 && (!inGame || left <= -120)) lockScreen();
 }, 5000);
+
+/* ---------- opt-in sharing: a grown-up ticks "Share progress with Goan Kids Club" for a child ---------- */
+const shareTimers = {};
+function shareData(p) {
+  const last7 = range(0, 6).map(i => { const d = new Date(); d.setDate(d.getDate() - i); return Math.round(usedSecs(p, dayKey(d))); });
+  return {
+    id: p.id, name: String(p.name).slice(0, 20), avatar: p.avatar, band: p.band, stars: p.stars, total: p.total, stickers: p.stickers.length,
+    games: Object.fromEntries(Object.entries(p.games || {}).filter(([, g]) => g.plays > 0).map(([id, g]) => [id, { b: (g.best || []).map(x => x || 0), p: g.plays || 0 }])),
+    today: last7[0], week: last7.reduce((a, b) => a + b, 0), last: (p.log && p.log[0] && p.log[0].t) || null,
+    limit: (p.time && p.time.limit) || 0,
+  };
+}
+function queueShare(p, ms = 3000) {
+  if (!p.share || !p.shareKey) return;
+  clearTimeout(shareTimers[p.id]);
+  shareTimers[p.id] = setTimeout(() => shareChild(p.id, p.shareKey, shareData(p)).catch(() => {}), ms);
+}
+document.addEventListener('visibilitychange', () => { const p = me(); if (document.visibilityState === 'hidden' && p && p.share) queueShare(p, 0); });
 
 /* ---------- screen + mascot ---------- */
 const app = $('#app');
@@ -189,7 +211,7 @@ function editChild(p, first = false) {
     d.name = n.charAt(0).toUpperCase() + n.slice(1);
     let who2 = p;
     if (p) Object.assign(p, { name: d.name, avatar: d.avatar, band: d.band });
-    else { who2 = { id: 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: d.name, avatar: d.avatar, band: d.band, stars: 0, total: 0, stickers: [], games: {}, mins: 0, log: [] }; S.profiles.push(who2); S.current = who2.id; }
+    else { who2 = { id: 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: d.name, avatar: d.avatar, band: d.band, stars: 0, total: 0, stickers: [], games: {}, mins: 0, log: [] }; S.profiles.push(who2); S.current = who2.id; track('newchild', { b: d.band }); }
     save(who2); p ? parentArea() : hub(true);
   };
   name.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn(); });
@@ -212,6 +234,7 @@ function hub(greet = false, cat = lastCat) {
   const p = me(); if (!p) return who();
   if (isLocked(p)) return lockScreen();
   kidMode(true);
+  once('c:' + p.id, dayKey(), 'childday', { b: p.band });
   const avail = GAMES.filter(g => g.minBand <= p.band);
   const list = avail.filter(g => cat === 'all' || g.cat === cat);
   const cats = CATS.filter(c => c.id === 'all' || avail.some(g => g.cat === c.id));
@@ -261,7 +284,7 @@ async function play(g, stage) {
   const board = h('main', { class: 'board' });
   const dots = h('div', { class: 'dots' }, range(1, rounds).map(() => h('i')));
   screen(
-    top(iconBtn('✖', 'Stop playing', () => stagesScreen(g), 'close'), `${g.icon} ${g.title}`, [clockChip(p), h('span', { class: 'chip' }, `Stage ${stage + 1}`)]),
+    top(iconBtn('✖', 'Stop playing', () => { track('quit', { g: g.id, s: stage, b: p.band }); stagesScreen(g); }, 'close'), `${g.icon} ${g.title}`, [clockChip(p), h('span', { class: 'chip' }, `Stage ${stage + 1}`)]),
     mascot(''), rounds ? dots : null, board);
   let mistakes = 0;
   const ctx = {
@@ -297,6 +320,7 @@ function finish(g, stage, stars, secs) {
   p.stars += stars; p.total += stars; p.mins = (p.mins || 0) + secs / 60;
   p.log.unshift({ g: g.id, s: stage, st: stars, t: Date.now() }); p.log = p.log.slice(0, 80);
   save(p); kidMode(true);
+  track('play', { g: g.id, s: stage, b: p.band, st: stars, secs }); track('hour', { s: new Date().getHours() });
   if (isLocked(p)) return lockScreen(stars);
   const hasNext = stage + 1 < g.stages.length, nowOpen = hasNext && unlocked(p, g, stage + 1);
   const canBuy = p.stars >= 5 && p.stickers.length < STICKERS.length * 12;
@@ -323,6 +347,7 @@ function lockScreen(stars = 0) {
   run++; stop(); kidMode(false);
   const p = me(); if (!p) return who();
   if (!isLocked(p)) return hub();
+  once('l:' + p.id, dayKey(), 'lock', { b: p.band });
   const mins = Math.max(1, Math.round(usedSecs(p) / 60));
   screen(
     top(h('button', { class: 'ibtn av', 'aria-label': 'Change child', onclick: who }, p.avatar), `Break time, ${p.name}`, [iconBtn('👪', 'Grown-ups', parentGate)]),
@@ -354,7 +379,7 @@ function stickers(page = 0) {
         class: 'sticker' + (own ? ' own' : '') + (cost > 5 ? ' rare' : ''), onclick: ev => {
           if (own) { sfx.tap(); sparkle(ev.currentTarget); return; }
           if (p.stars >= cost) {
-            p.stars -= cost; p.stickers.push(e); save(p); sfx.win(); confetti(40);
+            p.stars -= cost; p.stickers.push(e); save(p); track('sticker', { b: p.band }); sfx.win(); confetti(40);
             say(`Yay! A new sticker for your book! You have ${p.stars} stars left.`); stickers(page); setBubble(`Yay! A new sticker! You have ${p.stars} stars left.`);
           } else { sfx.bad(); say(`This sticker costs ${cost} stars. Play a game to earn ${cost - p.stars} more!`); }
         },
@@ -390,7 +415,7 @@ function cloudCard() {
         h('p', {}, 'Children can play without this. Turn it on to keep progress safe if this device is lost or its browser data is cleared, and to share progress between your family\'s iPads, phones and computers. No email or password: you get a secret family code instead.'),
         h('div', { class: 'setrow' }, h('button', {
           class: 'btn sm', onclick: async () => {
-            S.sync.code = newCode(); msg.textContent = 'Saving…'; render();
+            S.sync.code = newCode(); track('cloudon'); msg.textContent = 'Saving…'; render();
             const ok = await syncNow(); msg.textContent = ok ? 'Saved online.' : 'Could not reach the internet. It will try again later.'; render();
           },
         }, 'Turn on online saving')),
@@ -442,7 +467,7 @@ function timeCard() {
       const week = days.map(x => usedSecs(p, dayKey(x))), top7 = Math.max(600, ...week);
       const timerOn = t.timerDay === d && t.timerEnd != null && t.off !== d;
       const change = fn => () => { fn(); save(p); };
-      const limitSel = h('select', { class: 'sel', 'aria-label': `Daily limit for ${p.name}`, onchange: e => { t.limit = +e.target.value; t.off = null; save(p); render(); } },
+      const limitSel = h('select', { class: 'sel', 'aria-label': `Daily limit for ${p.name}`, onchange: e => { t.limit = +e.target.value; t.off = null; save(p); if (t.limit) track('limit', { s: t.limit, b: p.band }); render(); } },
         [0, 10, 15, 20, 30, 45, 60, 90, 120].map(m => h('option', { value: String(m), selected: (t.limit || 0) === m }, m ? `${m} minutes a day` : 'No daily limit')));
       box.append(h('div', { class: 'trow' },
         h('div', { class: 'thead' }, h('span', { class: 'av' }, p.avatar), h('b', {}, p.name),
@@ -451,7 +476,7 @@ function timeCard() {
           h('i', { style: `height:${Math.max(3, week[i] / top7 * 100)}%`, title: fmtMins(week[i]) }), h('small', {}, i === 6 ? 'Today' : x.toLocaleDateString('en-GB', { weekday: 'short' }))))),
         h('div', { class: 'setrow' }, h('span', { class: 'lbl' }, 'Every day'), limitSel),
         h('div', { class: 'setrow' }, h('span', { class: 'lbl' }, 'Timer from now'),
-          [10, 15, 20, 30].map(m => btn(`${m} min`, change(() => setTimer(p, m)), 'btn ghost sm' + (timerOn && t.timerEnd - u > 0 && Math.round((t.timerEnd - u) / 60) === m ? ' on' : ''))),
+          [10, 15, 20, 30].map(m => btn(`${m} min`, change(() => { setTimer(p, m); track('timer', { s: m, b: p.band }); }), 'btn ghost sm' + (timerOn && t.timerEnd - u > 0 && Math.round((t.timerEnd - u) / 60) === m ? ' on' : ''))),
           timerOn ? btn('Cancel timer', change(() => { t.timerEnd = null; })) : null),
         h('p', { class: 'tleft' + (a !== Infinity && left <= 0 ? ' up' : '') },
           a === Infinity ? (t.off === d ? 'No limit for the rest of today.' : 'No limit set.') : left <= 0 ? '🔒 Time is up. The games are locked.' : `${clockText(p)} left today${timerOn ? ' (timer)' : ''}.`),
@@ -462,6 +487,33 @@ function timeCard() {
     }
   };
   render();
+  return box;
+}
+
+/* Grown-ups card: opt-in sharing of each child's first name and progress with Goan Kids Club. */
+function shareCard() {
+  const box = h('section', { class: 'card sharecard' }, h('h3', {}, '📊 Share progress with Goan Kids Club (optional)'),
+    h('p', {}, 'If you tick a child below, their first name, buddy picture, age group, stars, stickers, stages reached and play time are sent to Goan Kids Club. It helps us see how children are getting on and make the games better. Nothing else is sent, and it is never shared with anyone else.'),
+    h('p', { class: 'muted small' }, 'Untick at any time and it is removed straight away.'));
+  if (!S.profiles.length) box.append(h('p', { class: 'muted' }, 'Add a child first.'));
+  for (const p of S.profiles) {
+    const note = h('small', { class: 'muted' }, p.share ? ' Shared ✓' : '');
+    box.append(h('label', { class: 'toggle' }, h('input', {
+      type: 'checkbox', checked: !!p.share, onchange: async e => {
+        const want = e.target.checked; note.textContent = ' Saving…';
+        try {
+          if (want) {
+            p.shareKey = p.shareKey || newShareKey(); p.share = true; save(p);
+            const ok = await shareChild(p.id, p.shareKey, shareData(p)); if (ok === false) throw new Error('key');
+            track('share'); note.textContent = ' Shared ✓';
+          } else { p.share = false; save(p); await unshareChild(p.id, p.shareKey); note.textContent = ' Removed'; }
+        } catch (err) {
+          if (want) note.textContent = ' Could not reach the internet. It will try again later.';
+          else { note.textContent = ' Could not reach the internet. Please try again.'; p.share = true; e.target.checked = true; save(p); }
+        }
+      },
+    }), h('span', {}, 'Share ' + p.name + "'s first name and progress"), note));
+  }
   return box;
 }
 
@@ -479,7 +531,7 @@ function parentArea(sel = S.current) {
         h('button', { class: 'pname', onclick: () => parentArea(p.id) }, h('span', { class: 'av' }, p.avatar), h('span', {}, h('b', {}, p.name), h('small', {}, `Age ${BANDS[p.band - 1].age} · ${BANDS[p.band - 1].uk}`))),
         h('span', { class: 'pstat' }, `⭐ ${p.total} earned · 📒 ${p.stickers.length} · ⏱ today ${fmtMins(usedSecs(p))}${isLocked(p) ? ' · 🔒 break time' : ''}`),
         h('button', { class: 'btn ghost sm', onclick: () => editChild(p) }, 'Edit'),
-        h('button', { class: 'btn ghost sm danger', onclick: () => { if (confirm(`Delete ${p.name} and all their progress? This cannot be undone.`)) { S.profiles = S.profiles.filter(x => x !== p); S.deleted.push(p.id); if (S.current === p.id) S.current = S.profiles[0]?.id || null; save(); parentArea(); } } }, 'Delete')))),
+        h('button', { class: 'btn ghost sm danger', onclick: () => { if (confirm(`Delete ${p.name} and all their progress? This cannot be undone.`)) { S.profiles = S.profiles.filter(x => x !== p); S.deleted.push(p.id); if (p.share && p.shareKey) unshareChild(p.id, p.shareKey).catch(() => {}); if (S.current === p.id) S.current = S.profiles[0]?.id || null; save(); parentArea(); } } }, 'Delete')))),
         h('button', { class: 'btn sm', onclick: () => editChild(null) }, '➕ Add a child')),
       timeCard(),
       kid ? card(`${kid.name}'s progress`, h('table', { class: 'prog' },
@@ -494,14 +546,18 @@ function parentArea(sel = S.current) {
         h('p', { class: 'muted small' }, 'The voice uses your device\'s British English voice. For the best phonics and real Konkani, record your own clips (see audio/README.md).')),
       card('Install on iPad or phone', h('p', {}, 'iPad / iPhone: open this page in Safari, tap Share, then "Add to Home Screen". Android: tap the ⋮ menu, then "Install app". It then opens full screen like an app and works offline.')),
       cloudCard(),
-      card('Privacy', h('p', {}, 'No ads, no sign-up, no tracking. Progress is saved on this device. It is only sent online if you turn on "Save progress online" above. '),
+      shareCard(),
+      card('Privacy', h('p', {}, 'No ads, no sign-up, no tracking. Progress is saved on this device. It is only sent online if you turn on "Save progress online" or "Share progress" above. '),
+        h('label', { class: 'toggle' }, h('input', { type: 'checkbox', checked: st.stats !== false, onchange: e => { st.stats = e.target.checked; statsOn(st.stats); save(); } }),
+          'Send anonymous counts (for example "Frog Hop was played") to help improve the games. No names, nothing that identifies you.'),
+        h('br'),
         h('a', { href: '../privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy notice')),
       h('section', { class: 'card supportcard' }, h('h3', {}, '☕ Support Goan Kids Club'),
         h('p', {}, 'These games run on code, love and coffee. Two are free. ', h('b', {}, 'Buy me the third'), ' and help keep Goan Kids Club free and ad-free!'),
         h('div', { class: 'treatrow' }, [['☕', '£3', 'a chai and a poi'], ['🍰', '£5', 'a slice of bebinca'], ['🍛', '£10', 'fish curry rice']].map(([e, p, t]) =>
-          h('a', { class: 'treat', href: "https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A", target: '_blank', rel: 'noopener' }, h('span', { class: 'e' }, e), h('b', {}, p), h('small', {}, t)))),
+          h('a', { class: 'treat', onclick: () => track('support', { g: 'paypal', s: 1 }), href: "https://www.paypal.com/donate/?hosted_button_id=V3QN84BYUBF6A", target: '_blank', rel: 'noopener' }, h('span', { class: 'e' }, e), h('b', {}, p), h('small', {}, t)))),
         h('p', { class: 'muted small' }, 'You choose the amount on PayPal. Dev borem korum!'),
-        h('a', { class: 'btn sm wa', href: "https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20", target: '_blank', rel: 'noopener' }, '💬 Requests or ideas? WhatsApp us')),
+        h('a', { class: 'btn sm wa', onclick: () => track('support', { g: 'whatsapp', s: 1 }), href: "https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20", target: '_blank', rel: 'noopener' }, '💬 Requests or ideas? WhatsApp us')),
       card('What children learn', h('ul', { class: 'learn' },
         h('li', {}, '🔢 Numbers: counting to 20, comparing, number line, adding and taking away, number bonds to 10, UK coins (EYFS Number, Year 1).'),
         h('li', {}, '🔤 Letters: UK phonics in Letters and Sounds order (s a t p…), first sounds, blending words, tracing, ABC order and capitals.'),
@@ -520,4 +576,5 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !/lo
 document.addEventListener('gesturestart', e => e.preventDefault());
 if (me()) hub(true); else who();
 queueSync(300);
+once('dev', dayKey(), 'active', { g: deviceKind(), s: installed() });
 window.__gkc = { S, GAMES, play, hub }; // handy for testing in the console

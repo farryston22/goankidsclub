@@ -103,5 +103,16 @@
     <a class="wa" href="https://wa.me/447743212345?text=Hi!%20I%20have%20a%20request%20for%20Goan%20Kids%20Club%3A%20" target="_blank" rel="noopener">💬 Requests or ideas? WhatsApp us</a>
   </section>
   <small>No ads · No sign-up · Works on iPad, phone and computer · <a href="privacy.html" style="color:inherit">Privacy</a></small>
+<script>
+  // Anonymous count of taps on the Support / WhatsApp buttons (no names, no ids). Skipped if a grown-up turned counts off.
+  document.querySelectorAll('.support a').forEach(a => a.addEventListener('click', () => {
+    try { const s = JSON.parse(localStorage.getItem('gkc-play-v1') || '{}'); if (s.settings && s.settings.stats === false) return; } catch (e) { /* ignore */ }
+    fetch('https://pqhyevbhnfeguqiiwygy.supabase.co/rest/v1/rpc/gkc_track', {
+      method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'application/json', apikey: 'sb_publishable_yulIHxeGfRkMVrGPnuftFw_R0Txh0vC' },
+      body: JSON.stringify({ p_events: [{ k: 'support', g: a.classList.contains('wa') ? 'whatsapp' : 'paypal', s: 0 }] }),
+    }).catch(() => {});
+  }));
+</script>
 </body>
 </html>
