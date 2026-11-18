@@ -7,12 +7,16 @@ import * as L from '../games/js/games/letters.js';
 import * as SH from '../games/js/games/shapes.js';
 import * as T from '../games/js/games/thinking.js';
 import * as W from '../games/js/games/world.js';
+import * as G from '../games/js/games/goa.js';
+import * as TT from '../games/js/games/times.js';
 
-const GAMES = [HG.house, HG.poder, HG.tiles, HG.goalife, N.count, N.bubbles, N.more, N.frog, N.add, N.shop,
+const GAMES = [HG.house, HG.poder, HG.tiles, HG.goalife,
+  G.mapgame, G.villages, G.jigsaw, G.quizferry, G.festivals, G.konkanitalk, G.symbols, G.safari, G.seasons, G.kitchen, G.rhythm, G.railway, G.monuments,
+  N.count, N.bubbles, N.more, N.frog, N.add, N.shop, TT.times,
   L.sounds, L.trace, L.firstsound, L.words, L.abc, SH.sorter, SH.colours, SH.patterns,
   T.memory, T.shadows, T.odd, T.sizes, W.animals, W.homes, W.babies, W.konkani];
 const GAME = Object.fromEntries(GAMES.map(g => [g.id, g]));
-const CATS = { heritage: '🏡 Goan Heritage', numbers: '🔢 Numbers', letters: '🔤 Letters', shapes: '🎨 Shapes & Colours', thinking: '🧠 Thinking', animals: '🦁 Animals', konkani: '🌴 Konkani' };
+const CATS = { heritage: '🏡 Goan Heritage', goa: '🗺️ Discover Goa', numbers: '🔢 Numbers', letters: '🔤 Letters', shapes: '🎨 Shapes & Colours', thinking: '🧠 Thinking', animals: '🦁 Animals', konkani: '🌴 Konkani' };
 const BANDS = ['', '3–4 Little Stars', '4–5 Busy Bees', '5–6 Super Explorers'];
 const PK = 'gkc-admin-pass';
 

@@ -16,6 +16,8 @@ export async function loadClips() {
   } catch (e) { /* no clips */ }
 }
 export const hasClip = k => clips.has(k);
+/** File name for a recorded sentence: lower case, words joined by dashes (see audio/VOICEOVERS.md). */
+export const slug = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70);
 
 /* ---------- voice ---------- */
 const canTTS = 'speechSynthesis' in window;
@@ -71,7 +73,9 @@ export async function speak(parts, fallbackText = '') {
   for (const p of [].concat(parts)) {
     if (my !== token) return;
     const part = typeof p === 'string' ? { t: p } : p;
+    const auto = part.t && clips.size ? 'say/' + slug(part.t) : null;
     if (part.clip && clips.has(part.clip)) await clipOnce(part.clip, my);
+    else if (auto && clips.has(auto)) await clipOnce(auto, my);
     else await ttsOnce(part.t, my);
   }
   if (my === token) talkCb(false);
@@ -103,4 +107,9 @@ export const sfx = {
   win: () => tone([523, 659, 784, 1047, 1319], 0.16, 'sine', 0.13),
   coin: () => tone([1200, 1800], 0.06, 'square', 0.04),
   note: f => tone([f], 0.08, 'sine', 0.08),
+  drum: (f = 95) => tone([f, f * 0.72], 0.2, 'sine', 0.3, 0.35),
+  ting: () => tone([1568, 2349], 0.09, 'triangle', 0.07, 0.5),
+  clap: () => tone([1900, 1200, 700], 0.03, 'square', 0.05, 0.6),
+  toot: () => tone([392, 392, 523], 0.14, 'square', 0.04, 1.1),
+  splash: () => tone([800, 500, 300, 200], 0.06, 'triangle', 0.08, 0.9),
 };

@@ -1,5 +1,7 @@
 # Your own voice recordings
 
+**The full list of recordings, with file names, is in [VOICEOVERS.md](VOICEOVERS.md).**
+
 The games talk using the device's British English voice. That voice can't say pure phonics sounds
 or Konkani words properly, so you can record your own and the games will use them automatically.
 
