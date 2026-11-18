@@ -1,9 +1,9 @@
 // Offline support: keeps the games working without internet once opened.
 // Bump VERSION whenever you change any file so phones pick up the update.
-const VERSION = 'gkc-v3';
+const VERSION = 'gkc-v5';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css', 'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png',
-  'js/app.js', 'js/util.js', 'js/audio.js', 'js/engine.js', 'js/data.js', 'js/art.js',
+  'js/app.js', 'js/sync.js', 'js/cloud-config.js', 'js/util.js', 'js/audio.js', 'js/engine.js', 'js/data.js', 'js/art.js',
   'js/games/numbers.js', 'js/games/letters.js', 'js/games/shapes.js', 'js/games/thinking.js', 'js/games/world.js', 'js/games/heritage.js',
   'audio/manifest.json',
 ];

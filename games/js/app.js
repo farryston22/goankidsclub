@@ -8,6 +8,7 @@ import * as T from './games/thinking.js';
 import * as W from './games/world.js';
 import * as HG from './games/heritage.js';
 import { villageSVG, tileURL } from './art.js';
+import { cloudReady, newCode, normCode, loadFamily, saveFamily, deleteFamily, merge } from './sync.js';
 
 export const GAMES = [
   HG.house, HG.poder, HG.tiles, HG.goalife,
@@ -42,10 +43,38 @@ const price = i => (i >= 10 ? 10 : 5);
 
 /* ---------- storage (this device only; nothing is sent anywhere) ---------- */
 const KEY = 'gkc-play-v1';
-const blank = () => ({ profiles: [], current: null, settings: { rate: 0.9, voice: true, sfx: true } });
+const blank = () => ({ profiles: [], deleted: [], current: null, settings: { rate: 0.9, voice: true, sfx: true }, sync: { code: null, last: 0, status: '' } });
 let S;
 try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) { S = blank(); }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ } };
+/** Save on this device. Pass the child whose progress changed so online saving knows which copy is newest. */
+const save = changed => {
+  if (changed) changed.updatedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ }
+  if (changed !== false) queueSync();
+};
+
+/* ---------- optional online saving (family code) ---------- */
+S.deleted = S.deleted || []; S.sync = S.sync || { code: null, last: 0, status: '' };
+let syncTimer = null, syncing = null;
+function queueSync(ms = 2000) { if (S.sync.code && cloudReady()) { clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, ms); } }
+async function syncNow() {
+  if (!S.sync.code || !cloudReady()) return false;
+  if (syncing) return syncing;
+  syncing = (async () => {
+    try {
+      const remote = await loadFamily(S.sync.code);
+      const m = merge({ profiles: S.profiles, deleted: S.deleted }, remote && remote.data);
+      S.profiles = m.profiles; S.deleted = m.deleted;
+      if (!S.profiles.some(p => p.id === S.current)) S.current = S.profiles[0]?.id || null;
+      await saveFamily(S.sync.code, { v: 1, profiles: S.profiles, deleted: S.deleted });
+      S.sync.last = Date.now(); S.sync.status = 'ok';
+      return true;
+    } catch (e) { S.sync.status = 'offline'; return false; }
+    finally { save(false); syncing = null; }
+  })();
+  return syncing;
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') queueSync(500); });
 bindSettings(S.settings);
 const me = () => S.profiles.find(p => p.id === S.current);
 const gstate = (p, g) => (p.games[g.id] = p.games[g.id] || { best: [], plays: 0 });
@@ -118,9 +147,10 @@ function editChild(p, first = false) {
   const saveBtn = () => {
     const n = name.value.trim(); if (!n) { name.focus(); name.classList.add('shake'); return; }
     d.name = n.charAt(0).toUpperCase() + n.slice(1);
+    let who2 = p;
     if (p) Object.assign(p, { name: d.name, avatar: d.avatar, band: d.band });
-    else { const np = { id: 'k' + Date.now().toString(36), name: d.name, avatar: d.avatar, band: d.band, stars: 0, total: 0, stickers: [], games: {}, mins: 0, log: [] }; S.profiles.push(np); S.current = np.id; }
-    save(); p ? parentArea() : hub(true);
+    else { who2 = { id: 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: d.name, avatar: d.avatar, band: d.band, stars: 0, total: 0, stickers: [], games: {}, mins: 0, log: [] }; S.profiles.push(who2); S.current = who2.id; }
+    save(who2); p ? parentArea() : hub(true);
   };
   name.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn(); });
   screen(
@@ -131,7 +161,8 @@ function editChild(p, first = false) {
       h('label', {}, 'Name'), name,
       h('label', {}, 'Pick a buddy'), avs,
       h('label', {}, 'Age group (you can change this later)'), bands,
-      h('button', { class: 'btn big', onclick: saveBtn }, p ? 'Save' : "Let's play! ▶")));
+      h('button', { class: 'btn big', onclick: saveBtn }, p ? 'Save' : "Let's play! ▶"),
+      first && cloudReady() ? h('button', { class: 'btn ghost sm', style: 'margin-top:14px', onclick: parentGate }, '☁️ Grown-ups: already saved progress online? Use your family code') : null));
 }
 
 /* ---------- hub ---------- */
@@ -219,7 +250,7 @@ function finish(g, stage, stars, secs) {
   gs.best[stage] = Math.max(gs.best[stage] || 0, stars); gs.plays++;
   p.stars += stars; p.total += stars; p.mins = (p.mins || 0) + secs / 60;
   p.log.unshift({ g: g.id, s: stage, st: stars, t: Date.now() }); p.log = p.log.slice(0, 80);
-  save();
+  save(p);
   const hasNext = stage + 1 < g.stages.length, nowOpen = hasNext && unlocked(p, g, stage + 1);
   const canBuy = p.stars >= 5 && p.stickers.length < STICKERS.length * 12;
   screen(
@@ -255,7 +286,7 @@ function stickers(page = 0) {
         class: 'sticker' + (own ? ' own' : '') + (cost > 5 ? ' rare' : ''), onclick: ev => {
           if (own) { sfx.tap(); sparkle(ev.currentTarget); return; }
           if (p.stars >= cost) {
-            p.stars -= cost; p.stickers.push(e); save(); sfx.win(); confetti(40);
+            p.stars -= cost; p.stickers.push(e); save(p); sfx.win(); confetti(40);
             say(`Yay! A new sticker for your book! You have ${p.stars} stars left.`); stickers(page); setBubble(`Yay! A new sticker! You have ${p.stars} stars left.`);
           } else { sfx.bad(); say(`This sticker costs ${cost} stars. Play a game to earn ${cost - p.stars} more!`); }
         },
@@ -278,6 +309,57 @@ function parentGate() {
   document.body.append(m); inp.focus();
 }
 
+/* Grown-ups card for the optional family code. */
+function cloudCard() {
+  const box = h('section', { class: 'card cloud' }, h('h3', {}, '☁️ Save progress online (optional)'));
+  const msg = h('p', { class: 'muted small' });
+  const render = () => {
+    box.querySelectorAll(':scope > :not(h3)').forEach(n => n.remove());
+    if (!cloudReady()) { box.append(h('p', { class: 'muted' }, 'Coming soon.')); return; }
+    if (!S.sync.code) {
+      const inp = h('input', { class: 'codeinput', placeholder: 'e.g. MANGO-CRAB-PALM-4821', autocomplete: 'off', autocapitalize: 'characters' });
+      box.append(
+        h('p', {}, 'Children can play without this. Turn it on to keep progress safe if this device is lost or its browser data is cleared, and to share progress between your family\'s iPads, phones and computers. No email or password: you get a secret family code instead.'),
+        h('div', { class: 'setrow' }, h('button', {
+          class: 'btn sm', onclick: async () => {
+            S.sync.code = newCode(); msg.textContent = 'Saving…'; render();
+            const ok = await syncNow(); msg.textContent = ok ? 'Saved online.' : 'Could not reach the internet. It will try again later.'; render();
+          },
+        }, 'Turn on online saving')),
+        h('p', { class: 'small' }, 'Already have a family code from another device? Type it here:'),
+        h('div', { class: 'setrow' }, inp, h('button', {
+          class: 'btn ghost sm', onclick: async () => {
+            const code = normCode(inp.value); if (code.split('-').length < 4) { msg.textContent = 'That code looks too short. It has four parts, like MANGO-CRAB-PALM-4821.'; return; }
+            msg.textContent = 'Checking…';
+            try {
+              const r = await loadFamily(code);
+              if (!r) { msg.textContent = 'No saved progress found for that code. Check the spelling.'; return; }
+              S.sync.code = code; await syncNow(); msg.textContent = 'Linked! Your children\'s progress is on this device now.'; render();
+              if (S.profiles.length) setTimeout(() => { if (box.isConnected) who(); }, 1500);
+            } catch (e) { msg.textContent = 'Could not reach the internet. Please try again.'; }
+          },
+        }, 'Link this device')), msg);
+      return;
+    }
+    const when = S.sync.last ? new Date(S.sync.last).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : 'not yet';
+    box.append(
+      h('p', {}, 'Your family code:'), h('div', { class: 'famcode' }, S.sync.code),
+      h('p', { class: 'small' }, 'Write it down or take a photo. Type it on another device (Grown-ups → Save progress online) to load the same progress. Anyone with this code can see your children\'s first names and progress, so keep it private.'),
+      h('p', { class: 'muted small' }, `Last saved online: ${when}${S.sync.status === 'offline' ? ' (offline, will retry)' : ''}`),
+      h('div', { class: 'setrow' },
+        h('button', { class: 'btn sm', onclick: async () => { msg.textContent = 'Saving…'; const ok = await syncNow(); msg.textContent = ok ? 'Saved.' : 'Could not reach the internet.'; render(); } }, 'Save now'),
+        h('button', { class: 'btn ghost sm', onclick: () => { if (confirm('Stop saving online on this device? Progress stays on this device and online copy is kept.')) { S.sync.code = null; save(false); render(); } } }, 'Stop on this device'),
+        h('button', {
+          class: 'btn ghost sm danger', onclick: async () => {
+            if (!confirm('Delete the online copy for this family code? Progress on this device is kept. This cannot be undone.')) return;
+            try { await deleteFamily(S.sync.code); S.sync.code = null; S.sync.last = 0; save(false); msg.textContent = 'Online copy deleted.'; render(); } catch (e) { msg.textContent = 'Could not reach the internet. Please try again.'; }
+          },
+        }, 'Delete online copy')), msg);
+  };
+  render();
+  return box;
+}
+
 function parentArea(sel = S.current) {
   run++; stop();
   const st = S.settings;
@@ -292,7 +374,7 @@ function parentArea(sel = S.current) {
         h('button', { class: 'pname', onclick: () => parentArea(p.id) }, h('span', { class: 'av' }, p.avatar), h('span', {}, h('b', {}, p.name), h('small', {}, `Age ${BANDS[p.band - 1].age} · ${BANDS[p.band - 1].uk}`))),
         h('span', { class: 'pstat' }, `⭐ ${p.total} earned · 📒 ${p.stickers.length} · ⏱ ${Math.round(p.mins || 0)} min`),
         h('button', { class: 'btn ghost sm', onclick: () => editChild(p) }, 'Edit'),
-        h('button', { class: 'btn ghost sm danger', onclick: () => { if (confirm(`Delete ${p.name} and all their progress? This cannot be undone.`)) { S.profiles = S.profiles.filter(x => x !== p); if (S.current === p.id) S.current = S.profiles[0]?.id || null; save(); parentArea(); } } }, 'Delete')))),
+        h('button', { class: 'btn ghost sm danger', onclick: () => { if (confirm(`Delete ${p.name} and all their progress? This cannot be undone.`)) { S.profiles = S.profiles.filter(x => x !== p); S.deleted.push(p.id); if (S.current === p.id) S.current = S.profiles[0]?.id || null; save(); parentArea(); } } }, 'Delete')))),
         h('button', { class: 'btn sm', onclick: () => editChild(null) }, '➕ Add a child')),
       kid ? card(`${kid.name}'s progress`, h('table', { class: 'prog' },
         h('tr', {}, h('th', {}, 'Game'), h('th', {}, 'Stages (best stars)'), h('th', {}, 'Plays')),
@@ -305,7 +387,9 @@ function parentArea(sel = S.current) {
         h('div', { class: 'setrow' }, 'Voice speed', rate, h('button', { class: 'btn ghost sm', onclick: () => say('Hello! This is how fast I talk.') }, 'Test')),
         h('p', { class: 'muted small' }, 'The voice uses your device\'s British English voice. For the best phonics and real Konkani, record your own clips (see audio/README.md).')),
       card('Install on iPad or phone', h('p', {}, 'iPad / iPhone: open this page in Safari, tap Share, then "Add to Home Screen". Android: tap the ⋮ menu, then "Install app". It then opens full screen like an app and works offline.')),
-      card('Privacy', h('p', {}, 'No ads, no sign-up, no tracking. Progress is saved only on this device and is never sent anywhere. Clearing your browser data will erase it.')),
+      cloudCard(),
+      card('Privacy', h('p', {}, 'No ads, no sign-up, no tracking. Progress is saved on this device. It is only sent online if you turn on "Save progress online" above. '),
+        h('a', { href: '../privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy notice')),
       card('What children learn', h('ul', { class: 'learn' },
         h('li', {}, '🔢 Numbers: counting to 20, comparing, number line, adding and taking away, number bonds to 10, UK coins (EYFS Number, Year 1).'),
         h('li', {}, '🔤 Letters: UK phonics in Letters and Sounds order (s a t p…), first sounds, blending words, tracing, ABC order and capitals.'),
@@ -323,4 +407,5 @@ document.documentElement.style.setProperty('--azulejo2', tileURL('diamond'));
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !/localhost|127\.0\.0\.1/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(() => {});
 document.addEventListener('gesturestart', e => e.preventDefault());
 if (me()) hub(true); else who();
+queueSync(300);
 window.__gkc = { S, GAMES, play, hub }; // handy for testing in the console

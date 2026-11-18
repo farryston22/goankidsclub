@@ -7,9 +7,15 @@ change, make it, test it in the browser pane, show him what changed, then commit
 ## Stack
 - Plain HTML, CSS and JavaScript (ES modules). **No build step, no npm, no framework.** Keep it that way.
 - Static hosting from this repo (see "Publishing" below). Every push to `main` goes live.
-- No server, no database, no accounts. Progress is stored in the child's browser (`localStorage` key `gkc-play-v1`).
+- No accounts. Progress is stored in the child's browser (`localStorage` key `gkc-play-v1`).
   Keep it ad-free and tracking-free (UK Age Appropriate Design Code). Never add analytics, ads or third-party
-  scripts without the owner asking. Google Fonts is the only outside request.
+  scripts without the owner asking. Outside requests: Google Fonts, and Supabase only when a grown-up turns on saving.
+- **Optional online saving** (Grown-ups → Save progress online): a family code (`WORD-WORD-WORD-1234`) is the key,
+  only its SHA-256 hash is stored. Supabase project `goankidsclub` (ref `pqhyevbhnfeguqiiwygy`, London, free plan,
+  GoaPages org). Schema in `supabase/migrations/`. Table `family_progress` is locked (RLS on, no policies); browsers
+  can only call `gkc_load` / `gkc_save` / `gkc_delete`. Client: `games/js/sync.js` (merge: newest `updatedAt` per
+  child wins, deleted ids are kept as tombstones), keys in `games/js/cloud-config.js` (publishable, safe to be public).
+  Children must always be able to play without it. Keep `privacy.html` in step with what is stored.
 
 ## Layout
 - `index.html` — small landing page with a "Play games" button.

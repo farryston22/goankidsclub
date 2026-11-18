@@ -323,6 +323,9 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 .toggle { display: flex; align-items: center; gap: 8px; }
 .toggle input { width: 24px; height: 24px; }
 .learn { margin: 0; padding-left: 18px; } .learn li { margin: 6px 0; }
+.famcode { font: 700 clamp(20px, 5vw, 28px) Fredoka, sans-serif; letter-spacing: 1px; color: var(--indigo); background: #FFF6DA; border: 3px dashed var(--ring); border-radius: 14px; padding: 10px 14px; display: inline-block; user-select: all; -webkit-user-select: all; word-break: normal; overflow-wrap: normal; line-height: 1.3; }
+.codeinput { font: inherit; font-size: 18px; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line); text-transform: uppercase; min-width: 0; flex: 1 1 220px; user-select: text; -webkit-user-select: text; }
+.cloud a, .card a { color: var(--indigo); }
 
 /* effects */
 .spark { position: fixed; z-index: 95; pointer-events: none; font-size: 26px; transform: translate(-50%, -50%); animation: spark .8s ease-out forwards; }
