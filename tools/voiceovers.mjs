@@ -10,6 +10,10 @@ const uniq = a => [...new Set(a)];
 
 // Konkani greetings: { k: 'dev-borem-korum', w: 'Dev borem korum', en: 'Thank you'
 const greet = [...src.matchAll(/\{ k: '([a-z-]+)', w: '([^']+)', en: (?:'([^']+)'|"([^"]+)")/g)].map(m => [m[1], m[2], m[3] || m[4]]);
+const bible = readFileSync(new URL('../games/js/games/bible.js', import.meta.url), 'utf8');
+const prayers = [...bible.matchAll(/\w+: \{ title: '([^']+)', clip: '([^']+)'/g)].map(m => [m[1], m[2]]);
+
+const pageLines = [...bible.matchAll(/, t: (['"])(.*?)\1, i:/g)].map(m => m[2]);
 const kon = data.match(/export const KONKANI = \{([\s\S]*?)\n\};/)[1];
 const konNums = [...kon.matchAll(/\['([a-z]+)', (\d+)\]/g)].map(m => [m[1], m[2]]);
 const konCols = [...kon.matchAll(/\['([a-z]+)', '([a-z]+)'\]/g)].map(m => [m[1], m[2]]);
@@ -75,6 +79,12 @@ ${konNums.map(([w, n]) => row(w + '.mp3', `**${w}**`, n)).join('\n')}
 ${konCols.map(([w, c]) => row(w + '.mp3', `**${w}**`, c)).join('\n')}
 ${konAnimals.map(([w, a]) => row(w + '.mp3', `**${w}**`, a)).join('\n')}
 
+### Prayers (Let Us Pray game) — say the whole prayer in Konkani, the way your family prays it
+| File | Say this | Meaning |
+|---|---|---|
+${prayers.map(([t, c]) => row(c + '.mp3', `**${t}** (whole prayer, in Konkani)`, 'English words are on screen; your recording plays when a child taps Hear it in Konkani')).join('\n')}
+
+
 ## Part 2: Goan names (strongly recommended) — folder \`games/audio/goa/\`
 Just the name, said the Goan way. Used in the map, villages, festivals and railway games.
 
@@ -90,7 +100,15 @@ with dashes, cut to 70 letters. Here are the Discover Goa sentences, with their 
 |---|---|
 ${uniq(sentences).map(s => `| \`${slug(s)}.mp3\` | ${s} |`).join('\n')}
 
-Total: ${greet.length + konNums.length + konCols.length + konAnimals.length} Konkani, ${names.length} names, ${uniq(sentences).length} sentences.
+## Part 4: Bible stories (optional, children would love to hear you tell them) — folder \`games/audio/say/\`
+Each line is one page of a Bible Story Time story, in story order.
+
+| File | Say this |
+|---|---|
+${pageLines.map(s => `| \`${slug(s)}.mp3\` | ${s} |`).join('\n')}
+
+
+Total: ${prayers.length} Konkani prayers, ${pageLines.length} story pages, ${greet.length + konNums.length + konCols.length + konAnimals.length} Konkani, ${names.length} names, ${uniq(sentences).length} sentences.
 `;
 writeFileSync(new URL('../games/audio/VOICEOVERS.md', import.meta.url), md);
 console.log(`Konkani ${greet.length + konNums.length + konCols.length + konAnimals.length}, names ${names.length}, sentences ${uniq(sentences).length}`);

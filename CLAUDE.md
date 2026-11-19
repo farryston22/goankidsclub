@@ -33,9 +33,11 @@ change, make it, test it in the browser pane, show the owner what changed, then 
 - `games/` — the Play & Learn app (`games/README.md` explains it for humans).
   - `js/app.js` profiles, hub, stages, stars, sticker book, grown-ups area, `GAMES` list and categories.
   - `js/engine.js` shared mechanics: `choice` (tap the answer), `drag` (drag or tap-tap), `tapOrder`.
-  - `js/games/*.js` one file per section: `heritage`, `goa` (Discover Goa: 13 games), `numbers`, `times` (1–10 times tables), `letters`, `shapes`, `thinking`, `world`.
+  - `js/games/*.js` one file per section: `heritage`, `goa` (Discover Goa: 13 games), `bible` (Bible Stories: 13 picture stories + 13 games, prayers, Goan saints), `christmas` (8 games incl. kuswar, Goan star, crib is in bible), `numbers`, `times` (1–10 times tables), `letters`, `shapes`, `thinking`, `world`.
   - Goa facts live in `js/games/goa.js` with sources at the top. Goa has **3 districts** since 31 Dec 2025 (North Goa, South Goa,
     Kushavati). Konkani greetings there are drafts: the owner must check them.
+  - Bible content: simple retellings, told gently for ages 3–6; prayers are the traditional English texts; Konkani prayers play only
+    from the owner's recordings (audio/konkani/prayer-*.mp3). Do not use the KJV text (UK Crown copyright) or modern copyrighted Bibles.
   - Voiceovers: `games/audio/VOICEOVERS.md` (regenerate with `node tools/voiceovers.mjs`). Clips: `konkani/<word>`, `goa/<name-slug>`,
     and any sentence as `say/<sentence-slug>` (audio.js plays it instead of the robot voice).
   - `js/data.js` content (phonics in UK Letters and Sounds order, words, animals, colours, shapes, UK coins, Konkani).

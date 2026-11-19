@@ -9,6 +9,8 @@ import * as W from './games/world.js';
 import * as HG from './games/heritage.js';
 import * as G from './games/goa.js';
 import * as TT from './games/times.js';
+import * as BB from './games/bible.js';
+import * as XM from './games/christmas.js';
 import { villageSVG, tileURL } from './art.js';
 import { cloudReady, newCode, normCode, loadFamily, saveFamily, deleteFamily, merge } from './sync.js';
 import { track, once, statsOn, deviceKind, installed, newShareKey, shareChild, unshareChild } from './stats.js';
@@ -16,6 +18,8 @@ import { track, once, statsOn, deviceKind, installed, newShareKey, shareChild, u
 export const GAMES = [
   HG.house, HG.poder, HG.tiles, HG.goalife,
   G.mapgame, G.villages, G.jigsaw, G.quizferry, G.festivals, G.konkanitalk, G.symbols, G.safari, G.seasons, G.kitchen, G.rhythm, G.railway, G.monuments,
+  BB.stories, BB.noah, BB.creation, BB.lostsheep, BB.loaves, BB.coat, BB.storyorder, BB.banimals, BB.bpuzzles, BB.verses, BB.crib, BB.churchyear, BB.saints, BB.prayers,
+  XM.kuswar, XM.xstar, XM.tree, XM.advent, XM.presents, XM.jingle, XM.xsounds, XM.xpuzzles,
   N.count, N.bubbles, N.more, N.frog, N.add, N.shop, TT.times,
   L.sounds, L.trace, L.firstsound, L.words, L.abc,
   SH.sorter, SH.colours, SH.patterns,
@@ -23,7 +27,7 @@ export const GAMES = [
   W.animals, W.homes, W.babies, W.konkani,
 ];
 const CATS = [
-  { id: 'all', label: 'All games', icon: '✨' }, { id: 'heritage', label: 'Goan Heritage', icon: '🏡' }, { id: 'goa', label: 'Discover Goa', icon: '🗺️' }, { id: 'numbers', label: 'Numbers', icon: '🔢' },
+  { id: 'all', label: 'All games', icon: '✨' }, { id: 'heritage', label: 'Goan Heritage', icon: '🏡' }, { id: 'goa', label: 'Discover Goa', icon: '🗺️' }, { id: 'bible', label: 'Bible Stories', icon: '✝️' }, { id: 'christmas', label: 'Christmas', icon: '🎄' }, { id: 'numbers', label: 'Numbers', icon: '🔢' },
   { id: 'letters', label: 'Letters', icon: '🔤' }, { id: 'shapes', label: 'Shapes & Colours', icon: '🎨' },
   { id: 'thinking', label: 'Thinking', icon: '🧠' }, { id: 'animals', label: 'Animals', icon: '🦁' },
   { id: 'konkani', label: 'Konkani', icon: '🌴' },
@@ -41,6 +45,8 @@ const STICKERS = [
   { page: 'Animals', icon: '🦁', items: ['🦁', '🐯', '🐼', '🦒', '🐘', '🦓', '🦘', '🐨', '🦩', '🦔', '🦦', '🐳'] },
   { page: 'Space', icon: '🚀', items: ['🚀', '🌙', '🌟', '🪐', '👽', '🛸', '☄️', '🌍', '🌞', '🔭', '👩‍🚀', '🌈'] },
   { page: 'Things that go', icon: '🚂', items: ['🚂', '🚌', '🚒', '🚑', '🚜', '🚲', '✈️', '🚁', '🛵', '🚤', '🏎️', '🚃'] },
+  { page: 'Bible Stories', icon: '🌈', items: ['🌈', '🕊️', '⭐', '🐑', '🐋', '🦁', '🧥', '🧺', '🍞', '🐟', '👑', '✝️'] },
+  { page: 'Christmas', icon: '🎄', items: ['🎄', '🌟', '🎁', '🔔', '⛄', '🦌', '🕯️', '🧦', '🎅', '🥟', '🍰', '👼'] },
   { page: 'Yummy', icon: '🍦', items: ['🍦', '🍉', '🍓', '🧁', '🍕', '🍩', '🍪', '🍨', '🥞', '🍫', '🍭', '🍿'] },
 ];
 const price = i => (i >= 10 ? 10 : 5);
@@ -149,7 +155,7 @@ document.addEventListener('visibilitychange', () => { const p = me(); if (docume
 /* ---------- screen + mascot ---------- */
 const app = $('#app');
 let run = 0, lastSaid = '';
-function screen(...nodes) { app.innerHTML = ''; app.append(...nodes); app.scrollTop = 0; window.scrollTo(0, 0); }
+function screen(...nodes) { app.innerHTML = ''; app.append(...nodes.filter(n => n != null && n !== false)); app.scrollTop = 0; window.scrollTo(0, 0); }
 function mascot(text = '') {
   return h('div', { class: 'mascotrow' },
     h('button', { class: 'mascot', 'aria-label': 'Tara the turtle', onclick: () => say(lastSaid || 'Hello! I am Tara the turtle.') }, '🐢'),

@@ -520,3 +520,92 @@ button:focus-visible { outline: 4px solid var(--indigo2); outline-offset: 2px; }
 }
 .ttfill { flex: 1; display: flex; height: 12px; border-radius: 6px; background: #E6DCC1; overflow: hidden; }
 .ttfill i { display: block; height: 100%; } .ttfill i.l3 { background: var(--good); } .ttfill i.l1 { background: var(--ochre); }
+
+/* ===================== Bible Stories ===================== */
+.bookhead { display: flex; justify-content: space-between; align-items: baseline; width: 100%; max-width: 640px; gap: 8px; flex-wrap: wrap; }
+.bookhead b { color: var(--indigo); font-size: 20px; } .bookhead small { color: var(--muted); }
+.bscene { position: relative; width: 100%; max-width: 640px; height: min(42vh, 330px); border-radius: 24px; overflow: hidden; box-shadow: 0 5px 0 var(--shadow); }
+.bscene.tall { height: min(50vh, 380px); }
+.bg-sky { background: linear-gradient(#9FD8F7, #DFF3FC 70%, #A5D66F 70%); }
+.bg-night { background: radial-gradient(circle at 70% 20%, #3B4F8A, #16224A 70%); }
+.bg-sea { background: linear-gradient(#9FD8F7 0 40%, #2F8FCB 40%); }
+.bg-storm { background: linear-gradient(#5B6B7C 0 40%, #2D5B7A 40%); }
+.bg-desert { background: linear-gradient(#FBD38D 0 55%, #E8B86A 55%); }
+.bg-grass { background: linear-gradient(#BFE6F7 0 50%, #8BC34A 50%); }
+.bg-hills { background: radial-gradient(ellipse at 30% 110%, #558B2F 45%, transparent 46%), radial-gradient(ellipse at 80% 115%, #7CB342 45%, transparent 46%), linear-gradient(#CDEBF7, #E8F6FC); }
+.bg-river { background: linear-gradient(#BFE6F7 0 45%, #8BC34A 45% 55%, #4EA6DC 55%); }
+.bg-rain { background: repeating-linear-gradient(105deg, transparent 0 14px, rgba(255,255,255,.35) 14px 16px), linear-gradient(#7A8EA3 0 55%, #3E7FAF 55%); }
+.bg-sunrise { background: linear-gradient(#FFB74D, #FFE0B2 60%, #A5D66F 60%); }
+.bg-beach { background: linear-gradient(#9FD8F7 0 40%, #2F8FCB 40% 55%, #F2D9A0 55%); }
+.bg-rainbow { background: radial-gradient(circle at 50% 100%, transparent 38%, #8E24AA 38% 41%, #3949AB 41% 44%, #1E88E5 44% 47%, #43A047 47% 50%, #FDD835 50% 53%, #FB8C00 53% 56%, #E53935 56% 59%, transparent 59%), linear-gradient(#BFE6F7 0 75%, #8BC34A 75%); }
+.bg-stable { background: linear-gradient(#16224A 0 30%, #8D5A3B 30% 34%, #C79A6B 34% 85%, #7CB342 85%); }
+.bitem { position: absolute; transform: translate(-50%, -50%); line-height: 1; filter: drop-shadow(0 4px 3px rgba(0,0,0,.2)); animation: bob 3s ease-in-out infinite; }
+.bitem.z1 { font-size: clamp(26px, 5vw, 38px); } .bitem.z2 { font-size: clamp(38px, 8vw, 58px); } .bitem.z3 { font-size: clamp(56px, 12vw, 90px); }
+.bitem:nth-child(2n) { animation-delay: .6s; } .bitem:nth-child(3n) { animation-delay: 1.2s; }
+.bitem.boing { animation: hop .6s ease 1; }
+.arkwrap { width: 46%; } .arksvg { width: 100%; height: auto; display: block; }
+.storytext { font-size: clamp(19px, 3.6vw, 24px); line-height: 1.4; text-align: center; max-width: 640px; margin: 4px 0; color: var(--ink); }
+.arkscene { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 640px; }
+.arkpic { width: min(70%, 320px); }
+.arkrooms { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: -10px; }
+.arkroom { position: relative; width: 120px; height: 90px; border-radius: 16px; background: #C79A6B; box-shadow: inset 0 0 0 4px #8D5A3B; display: flex; align-items: center; justify-content: center; }
+.arkroom .ghost { position: absolute; font-size: 44px; opacity: .25; filter: grayscale(1); }
+.arkroom .slot { display: flex; gap: 2px; z-index: 1; } .arkroom .slot .animal { font-size: 36px; }
+.animal { font-size: 46px; line-height: 1; }
+.pairrow, .flock { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 560px; font-size: 40px; line-height: 1.1; }
+.pair { background: #FFF6DA; border-radius: 16px; padding: 4px 8px; border: 3px solid var(--ring); }
+.flock .plus { font-size: 40px; color: var(--indigo); align-self: center; }
+.rbw { display: flex; flex-direction: column; align-items: center; gap: 4px; } .rbw i { width: 54px; height: 22px; border-radius: 11px; } .rbw b { font-size: 14px; }
+.hide { position: absolute; transform: translate(-50%, -50%); font-size: clamp(48px, 10vw, 74px); line-height: 1; transition: transform .15s; }
+.hide:hover { transform: translate(-50%, -54%) scale(1.06); }
+.hide.nothere { opacity: .45; } .hide.found { animation: hop .7s ease 2; filter: drop-shadow(0 0 10px #F8C33A); }
+.sharerow { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.sharebasket { width: 130px; min-height: 140px; border-radius: 20px; background: #fff; box-shadow: 0 5px 0 var(--shadow), inset 0 0 0 3px var(--line); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 8px; gap: 2px; }
+.sharebasket .in { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; min-height: 40px; } .sharebasket .in .bread { font-size: 26px; }
+.sharebasket > b { font-size: 46px; line-height: 1; } .sharebasket small { font-size: 12px; color: var(--muted); }
+.coatview, .coatmini { width: min(60vw, 240px); } .coatmini { width: min(30vw, 130px); }
+.coatview svg, .coatmini svg { width: 100%; height: auto; display: block; }
+.coat .stripe { cursor: pointer; } .coat .stripe.now { animation: hintsvg 1s ease-in-out infinite; }
+.coatpair { display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.swatch.on { outline: 4px solid var(--ink); outline-offset: 2px; }
+.storycard { max-width: 140px; } .storycard b { font-size: 14px; }
+.versehint { display: flex; gap: 10px; align-items: center; color: var(--muted); }
+.orderline.verse { min-height: 80px; } .orderline.verse .orderslot { min-width: 60px; min-height: 60px; }
+.word { font-size: 24px; font-weight: 700; color: var(--indigo); padding: 0 6px; } .word.big { font-size: 30px; }
+.cribscene { position: relative; width: min(100%, 520px); line-height: 0; }
+.cribscene .stable { width: 100%; height: auto; border-radius: 20px; background: linear-gradient(#16224A, #2E4378); box-shadow: 0 5px 0 var(--shadow); }
+.cribspot { position: absolute; width: 17%; height: 20%; transform: translate(-50%, -50%); border-radius: 50%; border: 3px dashed rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; line-height: 1; }
+.cribspot .slot { display: flex; align-items: center; justify-content: center; }
+.cribspot .slot .cribfig { background: none; box-shadow: none; padding: 0; } .cribspot .slot .cribfig small { display: none; }
+.cribspot:has(.cribfig) { border-color: transparent; }
+.cribfig { display: inline-flex; flex-direction: column; align-items: center; background: #fff; border-radius: 14px; padding: 6px 10px; box-shadow: 0 4px 0 var(--shadow); line-height: 1.1; }
+.cribfig .gi { font-size: 38px; } .cribfig small { font-size: 12px; }
+.prayercard { background: #fff; border-radius: 22px; padding: 14px 20px; box-shadow: 0 5px 0 var(--shadow), inset 0 0 0 4px #D1C4E9; max-width: 560px; width: 100%; text-align: center; }
+.prayercard h3 { margin: 0 0 6px; color: #3949AB; }
+.pline { margin: 4px 0; font-size: 19px; color: var(--muted); transition: color .2s, transform .2s; }
+.pline.now { color: #3949AB; font-weight: 700; transform: scale(1.04); } .pline.done { color: var(--ink); }
+.pline.big { font-size: 24px; }
+
+/* ===================== Christmas ===================== */
+.kustin { width: 190px; display: flex; flex-direction: column; align-items: center; }
+.kustin .in { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; min-height: 50px; width: 170px; margin-bottom: -18px; z-index: 1; } .kustin .in .bread { font-size: 26px; }
+.kustin > b { font-size: 100px; line-height: 1; }
+.plate > b { font-size: 50px; }
+.starview { width: min(70vw, 260px); } .starview svg { width: 100%; height: auto; display: block; }
+.xstar .ray { cursor: pointer; } .xstar .ray.now { animation: hintsvg 1s ease-in-out infinite; }
+.treewrap { position: relative; width: min(70vw, 260px); line-height: 0; }
+.treewrap .xtree { width: 100%; height: auto; }
+.treetop { position: absolute; left: 50%; top: 0; transform: translate(-50%, -30%); font-size: 46px; filter: grayscale(1) opacity(.45); }
+.treetop.lit { filter: drop-shadow(0 0 12px #FDD835); animation: hop .7s ease 2; }
+.bauble { width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff8, transparent 40%), var(--c); box-shadow: 0 4px 0 rgba(0,0,0,.25); }
+.onbauble { position: absolute; width: 13%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff8, transparent 40%), var(--c); box-shadow: 0 3px 0 rgba(0,0,0,.25); animation: pop .3s; }
+.advent { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 8px; width: 100%; max-width: 560px; }
+.door { position: relative; aspect-ratio: 1; border-radius: 12px; background: #C62828; color: #fff; box-shadow: 0 4px 0 #8E1C1C, inset 0 0 0 3px #F9A825; overflow: hidden; }
+.door .num { font-size: clamp(20px, 4.5vw, 30px); font-weight: 700; } .door .treat { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; background: #FFF6DA; transform: scaleX(0); transition: transform .3s; }
+.door.open .treat { transform: scaleX(1); }
+.cal { display: flex; gap: 14px; align-items: center; font-size: 40px; } .cal b { background: #fff; border-radius: 14px; padding: 6px 14px; box-shadow: 0 4px 0 var(--shadow); color: var(--indigo); } .cal .xmas { color: #C62828; }
+.present { line-height: 1; }
+.stocking > b { font-size: 90px; }
+@media (max-width: 520px) { .arkroom { width: 96px; height: 76px; } .sharebasket { width: 104px; } .advent { gap: 5px; } }
+.cribspot .ghost { position: absolute; font-size: clamp(22px, 5vw, 34px); opacity: .35; filter: grayscale(1); pointer-events: none; }
+.cribspot:has(.cribfig) .ghost { display: none; }

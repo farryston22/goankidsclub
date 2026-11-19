@@ -58,6 +58,16 @@ If a phrase is wrong, tell Claude the right Romi Konkani spelling. The file name
 | `kombo.mp3` | **kombo** | rooster |
 | `dukor.mp3` | **dukor** | pig |
 
+### Prayers (Let Us Pray game) — say the whole prayer in Konkani, the way your family prays it
+| File | Say this | Meaning |
+|---|---|---|
+| `prayer-sign-of-the-cross.mp3` | **The Sign of the Cross** (whole prayer, in Konkani) | English words are on screen; your recording plays when a child taps Hear it in Konkani |
+| `prayer-grace.mp3` | **Grace before meals** (whole prayer, in Konkani) | English words are on screen; your recording plays when a child taps Hear it in Konkani |
+| `prayer-our-father.mp3` | **Our Father** (whole prayer, in Konkani) | English words are on screen; your recording plays when a child taps Hear it in Konkani |
+| `prayer-hail-mary.mp3` | **Hail Mary** (whole prayer, in Konkani) | English words are on screen; your recording plays when a child taps Hear it in Konkani |
+| `prayer-glory-be.mp3` | **Glory Be** (whole prayer, in Konkani) | English words are on screen; your recording plays when a child taps Hear it in Konkani |
+
+
 ## Part 2: Goan names (strongly recommended) — folder `games/audio/goa/`
 Just the name, said the Goan way. Used in the map, villages, festivals and railway games.
 
@@ -175,4 +185,72 @@ with dashes, cut to 70 letters. Here are the Discover Goa sentences, with their 
 | `dudhsagar-waterfall-is-huge-and-white-in-the-monsoon.mp3` | Dudhsagar waterfall is huge and white in the monsoon. |
 | `to-the-beach-winter-is-the-best-time-for-the-beach-in-goa.mp3` | To the beach! Winter is the best time for the beach in Goa. |
 
-Total: 35 Konkani, 56 names, 48 sentences.
+## Part 4: Bible stories (optional, children would love to hear you tell them) — folder `games/audio/say/`
+Each line is one page of a Bible Story Time story, in story order.
+
+| File | Say this |
+|---|---|
+| `in-the-beginning-everything-was-dark-and-empty-then-god-said-let-there.mp3` | In the beginning, everything was dark and empty. Then God said, "Let there be light!" And there was light. |
+| `god-made-the-blue-sky-above-and-the-seas-below-then-dry-land-appeared-.mp3` | God made the blue sky above and the seas below. Then dry land appeared, with grass, flowers and trees. |
+| `god-made-the-sun-to-shine-in-the-day-and-the-moon-and-stars-for-the-ni.mp3` | God made the sun to shine in the day, and the moon and stars for the night. |
+| `god-filled-the-sea-with-fish-and-the-sky-with-birds-splash-tweet-tweet.mp3` | God filled the sea with fish and the sky with birds. Splash! Tweet tweet! |
+| `god-made-the-animals-and-then-god-made-people-god-looked-at-everything.mp3` | God made the animals, and then God made people. God looked at everything and said, "It is very good!" On the seventh day, God rested. |
+| `noah-loved-god-god-told-noah-to-build-a-very-big-boat-called-an-ark-ba.mp3` | Noah loved God. God told Noah to build a very big boat called an ark. Bang, bang, bang went the hammer! |
+| `then-the-animals-came-two-by-two-two-giraffes-two-elephants-two-lions-.mp3` | Then the animals came, two by two. Two giraffes, two elephants, two lions, and many more! |
+| `then-it-rained-and-rained-for-forty-days-and-forty-nights-the-ark-floa.mp3` | Then it rained and rained for forty days and forty nights. The ark floated safely on the water, with everyone cosy inside. |
+| `noah-sent-out-a-dove-it-came-back-with-an-olive-leaf-in-its-beak-the-l.mp3` | Noah sent out a dove. It came back with an olive leaf in its beak. The land was dry again! |
+| `god-put-a-rainbow-in-the-sky-it-was-god-s-promise-to-always-care-for-t.mp3` | God put a rainbow in the sky. It was God's promise to always care for the world. |
+| `abraham-and-sarah-lived-in-tents-they-loved-god-and-they-wished-for-a-.mp3` | Abraham and Sarah lived in tents. They loved God, and they wished for a family. |
+| `one-night-god-said-look-up-at-the-sky-can-you-count-the-stars-there-we.mp3` | One night God said, "Look up at the sky. Can you count the stars?" There were too many to count! |
+| `god-promised-abraham-a-family-as-big-as-all-the-stars-in-the-sky-abrah.mp3` | God promised Abraham a family as big as all the stars in the sky. Abraham trusted God. |
+| `when-they-were-old-abraham-and-sarah-had-a-baby-boy-called-isaac-sarah.mp3` | When they were old, Abraham and Sarah had a baby boy called Isaac. Sarah laughed with joy! |
+| `jacob-gave-his-son-joseph-a-beautiful-coat-of-many-colours.mp3` | Jacob gave his son Joseph a beautiful coat of many colours. |
+| `joseph-s-brothers-were-jealous-they-sent-him-far-away-to-egypt.mp3` | Joseph's brothers were jealous. They sent him far away to Egypt. |
+| `in-egypt-god-helped-joseph-he-became-a-great-helper-to-the-king.mp3` | In Egypt, God helped Joseph. He became a great helper to the king. |
+| `joseph-saved-lots-of-food-when-there-was-no-food-in-the-land-he-could-.mp3` | Joseph saved lots of food. When there was no food in the land, he could feed everyone, even his brothers. |
+| `joseph-forgave-his-brothers-and-gave-them-a-big-hug-the-family-was-tog.mp3` | Joseph forgave his brothers and gave them a big hug. The family was together again. |
+| `baby-moses-mother-wanted-to-keep-him-safe-she-made-a-little-basket-tha.mp3` | Baby Moses' mother wanted to keep him safe. She made a little basket that could float like a boat. |
+| `she-put-baby-moses-in-the-basket-among-the-tall-reeds-by-the-river-his.mp3` | She put baby Moses in the basket among the tall reeds by the river. His big sister Miriam watched over him. |
+| `a-princess-came-down-to-the-river-she-saw-the-basket-and-heard-the-bab.mp3` | A princess came down to the river. She saw the basket and heard the baby crying. |
+| `the-princess-loved-baby-moses-and-looked-after-him-god-kept-moses-safe.mp3` | The princess loved baby Moses and looked after him. God kept Moses safe. |
+| `david-was-a-shepherd-boy-who-looked-after-his-sheep-he-loved-god-very-.mp3` | David was a shepherd boy who looked after his sheep. He loved God very much. |
+| `a-giant-soldier-called-goliath-frightened-everyone-nobody-was-brave-en.mp3` | A giant soldier called Goliath frightened everyone. Nobody was brave enough to face him. |
+| `david-said-god-will-help-me-he-picked-five-smooth-stones-from-the-stre.mp3` | David said, "God will help me." He picked five smooth stones from the stream. |
+| `david-swung-his-sling-and-the-giant-fell-down-with-a-bump-everyone-che.mp3` | David swung his sling, and the giant fell down with a bump! Everyone cheered. |
+| `david-grew-up-to-be-a-king-he-always-remembered-that-god-makes-us-brav.mp3` | David grew up to be a king. He always remembered that God makes us brave. |
+| `daniel-prayed-to-god-three-times-every-day-by-his-window.mp3` | Daniel prayed to God three times every day, by his window. |
+| `some-men-tricked-the-king-into-making-a-rule-no-praying-to-god-but-dan.mp3` | Some men tricked the king into making a rule: no praying to God! But Daniel kept on praying. |
+| `daniel-was-put-in-a-den-of-lions-but-god-sent-an-angel-to-shut-the-lio.mp3` | Daniel was put in a den of lions. But God sent an angel to shut the lions' mouths. |
+| `in-the-morning-the-king-ran-to-the-den-daniel-was-safe-the-king-was-so.mp3` | In the morning, the king ran to the den. Daniel was safe! The king was so happy. |
+| `god-asked-jonah-to-go-to-the-city-of-nineveh-but-jonah-ran-away-on-a-s.mp3` | God asked Jonah to go to the city of Nineveh. But Jonah ran away on a ship instead. |
+| `a-big-storm-came-the-sailors-were-scared-jonah-said-it-is-my-fault-put.mp3` | A big storm came! The sailors were scared. Jonah said, "It is my fault. Put me into the sea." |
+| `god-sent-a-huge-fish-to-swallow-jonah-jonah-stayed-inside-for-three-da.mp3` | God sent a huge fish to swallow Jonah. Jonah stayed inside for three days and prayed. |
+| `the-fish-put-jonah-back-on-the-beach-this-time-jonah-went-to-nineveh.mp3` | The fish put Jonah back on the beach. This time, Jonah went to Nineveh. |
+| `the-people-of-nineveh-said-sorry-to-god-and-god-forgave-them.mp3` | The people of Nineveh said sorry to God, and God forgave them. |
+| `mary-and-joseph-went-on-a-long-journey-to-bethlehem-mary-rode-on-a-don.mp3` | Mary and Joseph went on a long journey to Bethlehem. Mary rode on a donkey. |
+| `there-was-no-room-at-the-inn-so-they-stayed-in-a-stable-with-the-anima.mp3` | There was no room at the inn, so they stayed in a stable with the animals. |
+| `baby-jesus-was-born-mary-wrapped-him-up-warmly-and-laid-him-in-a-mange.mp3` | Baby Jesus was born! Mary wrapped him up warmly and laid him in a manger. |
+| `angels-told-the-shepherds-the-good-news-the-shepherds-hurried-to-see-t.mp3` | Angels told the shepherds the good news. The shepherds hurried to see the baby. |
+| `wise-men-followed-a-bright-star-they-brought-gifts-of-gold-frankincens.mp3` | Wise men followed a bright star. They brought gifts of gold, frankincense and myrrh. |
+| `jesus-and-his-friends-got-into-a-boat-to-cross-the-lake-jesus-was-tire.mp3` | Jesus and his friends got into a boat to cross the lake. Jesus was tired, and fell asleep. |
+| `a-big-storm-came-waves-splashed-into-the-boat-his-friends-were-scared.mp3` | A big storm came! Waves splashed into the boat. His friends were scared. |
+| `they-woke-jesus-up-jesus-said-to-the-wind-and-the-waves-peace-be-still.mp3` | They woke Jesus up. Jesus said to the wind and the waves, "Peace! Be still!" |
+| `everything-became-calm-his-friends-said-even-the-wind-and-waves-do-wha.mp3` | Everything became calm. His friends said, "Even the wind and waves do what he says!" |
+| `a-shepherd-had-one-hundred-sheep-he-counted-them-every-day.mp3` | A shepherd had one hundred sheep. He counted them every day. |
+| `one-day-one-sheep-was-missing-only-ninety-nine-were-there.mp3` | One day, one sheep was missing! Only ninety-nine were there. |
+| `the-shepherd-searched-everywhere-over-the-hills-and-behind-the-rocks.mp3` | The shepherd searched everywhere, over the hills and behind the rocks. |
+| `he-found-the-little-lost-sheep-he-carried-it-home-on-his-shoulders-so-.mp3` | He found the little lost sheep! He carried it home on his shoulders, so happy. |
+| `jesus-said-god-loves-each-one-of-us-just-like-that-shepherd-loves-ever.mp3` | Jesus said God loves each one of us, just like that shepherd loves every single sheep. |
+| `a-man-was-walking-on-a-long-road-robbers-took-his-things-and-left-him-.mp3` | A man was walking on a long road. Robbers took his things and left him hurt by the road. |
+| `two-people-walked-past-and-did-not-stop-to-help-him.mp3` | Two people walked past, and did not stop to help him. |
+| `then-a-man-from-samaria-stopped-he-cleaned-the-cuts-and-put-on-bandage.mp3` | Then a man from Samaria stopped. He cleaned the cuts and put on bandages. |
+| `he-took-the-man-to-an-inn-and-paid-for-him-to-rest-and-get-better.mp3` | He took the man to an inn and paid for him to rest and get better. |
+| `jesus-said-be-like-the-kind-samaritan-help-anyone-who-needs-you.mp3` | Jesus said: be like the kind Samaritan. Help anyone who needs you. |
+| `jesus-rode-into-jerusalem-on-a-donkey-people-waved-palm-branches-and-s.mp3` | Jesus rode into Jerusalem on a donkey. People waved palm branches and sang, "Hosanna!" |
+| `jesus-shared-a-special-meal-with-his-friends-he-broke-the-bread-and-sh.mp3` | Jesus shared a special meal with his friends. He broke the bread and shared it with them. |
+| `then-jesus-died-on-a-cross-his-friends-were-very-sad-they-put-him-in-a.mp3` | Then Jesus died on a cross. His friends were very sad. They put him in a tomb in a garden. |
+| `on-sunday-morning-his-friends-found-the-big-stone-rolled-away-the-tomb.mp3` | On Sunday morning, his friends found the big stone rolled away. The tomb was empty! |
+| `jesus-is-alive-he-rose-again-that-is-why-we-celebrate-easter-with-joy.mp3` | Jesus is alive! He rose again. That is why we celebrate Easter with joy. |
+
+
+Total: 5 Konkani prayers, 61 story pages, 35 Konkani, 56 names, 48 sentences.
