@@ -96,7 +96,7 @@ const gameStars = (p, g) => gstate(p, g).best.reduce((a, b) => a + (b || 0), 0);
 
 /* ---------- play time: a daily limit and a "timer from now", set by grown-ups ----------
    p.days = { 'YYYY-MM-DD': seconds played }, p.time = { limit, day, extra, timerDay, timerEnd, off }.
-   Time only counts while a child's screen is open and visible. When it runs out, Tara naps and the games lock. */
+   Time only counts while a child's screen is open and visible. When it runs out, Daisy naps and the games lock. */
 const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const usedSecs = (p, day = dayKey()) => (p.days && p.days[day]) || 0;
 const ptime = p => (p.time = p.time || {});
@@ -158,7 +158,7 @@ let run = 0, lastSaid = '';
 function screen(...nodes) { app.innerHTML = ''; app.append(...nodes.filter(n => n != null && n !== false)); app.scrollTop = 0; window.scrollTo(0, 0); }
 function mascot(text = '') {
   return h('div', { class: 'mascotrow' },
-    h('button', { class: 'mascot', 'aria-label': 'Tara the turtle', onclick: () => say(lastSaid || 'Hello! I am Tara the turtle.') }, '🐢'),
+    h('button', { class: 'mascot', 'aria-label': 'Daisy the bunny', onclick: () => say(lastSaid || 'Hello! I am Daisy the bunny.') }, '🐰'),
     h('button', { class: 'speech', id: 'speech', onclick: () => say(lastSaid) }, text));
 }
 onTalk(on => document.querySelectorAll('.mascot').forEach(m => m.classList.toggle('talk', on)));
@@ -260,7 +260,7 @@ function hub(greet = false, cat = lastCat) {
         h('small', {}, gs.plays ? `⭐ ${got} / ${max}` : 'New!'),
         h('i', { class: 'bar' }, h('i', { style: `width:${got / max * 100}%` })));
     })));
-  const msg = greet ? `Hello ${p.name}! I'm Tara the turtle. Pick a game to play!` : cat === 'all' ? 'Pick a game!' : `${CATS.find(c => c.id === cat).label} games!`;
+  const msg = greet ? `Hello ${p.name}! I'm Daisy the bunny. Pick a game to play!` : cat === 'all' ? 'Pick a game!' : `${CATS.find(c => c.id === cat).label} games!`;
   if (greet) say(msg); else setBubble(msg);
 }
 
@@ -336,7 +336,7 @@ function finish(g, stage, stars, secs) {
   screen(
     top(iconBtn('⬅️', 'Stages', () => stagesScreen(g)), `${g.icon} ${g.title}`, [starChip(p)]),
     h('div', { class: 'result' },
-      h('div', { class: 'bigturtle' }, '🐢'),
+      h('div', { class: 'bigturtle' }, '🐰'),
       h('div', { class: 'earned' }, [1, 2, 3].map(i => h('span', { class: i <= stars ? 'on' : '', style: `animation-delay:${i * 0.25}s` }, '⭐'))),
       h('h2', {}, stars === 3 ? 'Superstar!' : stars === 2 ? 'Great work!' : 'Good try!'),
       h('p', { class: 'muted' }, `You earned ${stars} star${stars > 1 ? 's' : ''}. You have ${p.stars} in your star jar!`),
@@ -361,14 +361,14 @@ function lockScreen(stars = 0) {
   screen(
     top(h('button', { class: 'ibtn av', 'aria-label': 'Change child', onclick: who }, p.avatar), `Break time, ${p.name}`, [iconBtn('👪', 'Grown-ups', parentGate)]),
     h('div', { class: 'result nap' },
-      h('div', { class: 'napturtle' }, h('span', {}, '🐢'), h('i', {}, 'z'), h('i', {}, 'z'), h('i', {}, 'Z')),
+      h('div', { class: 'napturtle' }, h('span', {}, '🐰'), h('i', {}, 'z'), h('i', {}, 'z'), h('i', {}, 'Z')),
       h('h2', {}, 'Time for a break!'),
       stars ? h('p', {}, `You earned ${stars} star${stars > 1 ? 's' : ''} in your last game. You have ${p.stars} in your star jar!`) : null,
-      h('p', { class: 'muted' }, `You played for ${mins} minute${mins > 1 ? 's' : ''} today. Tara is having a little nap. Go and run, draw or read a book, and come back later!`),
+      h('p', { class: 'muted' }, `You played for ${mins} minute${mins > 1 ? 's' : ''} today. Daisy is having a little nap. Go and run, draw or read a book, and come back later!`),
       mascot(''),
       h('button', { class: 'btn ghost', onclick: () => { sfx.tap(); parentGate(); } }, '👪 Grown-ups: add more time')));
   sfx.win();
-  say(`${stars ? `Well done, ${p.name}! You earned ${stars} star${stars > 1 ? 's' : ''}. ` : ''}It's time for a break, ${p.name}. Tara is having a nap. See you later!`);
+  say(`${stars ? `Well done, ${p.name}! You earned ${stars} star${stars > 1 ? 's' : ''}. ` : ''}It's time for a break, ${p.name}. Daisy is having a nap. See you later!`);
 }
 
 /* ---------- sticker book (spend stars) ---------- */
@@ -550,7 +550,7 @@ function timeCard() {
   const btn = (label, fn, cls = 'btn ghost sm') => h('button', { class: cls, onclick: () => { fn(); render(); } }, label);
   const render = () => {
     box.querySelectorAll(':scope > :not(h3)').forEach(n => n.remove());
-    box.append(h('p', { class: 'muted small' }, 'Time only counts while a child is playing with the screen open. When their time is up, Tara has a nap and the games lock until a grown-up adds more time, or until tomorrow.'));
+    box.append(h('p', { class: 'muted small' }, 'Time only counts while a child is playing with the screen open. When their time is up, Daisy has a nap and the games lock until a grown-up adds more time, or until tomorrow.'));
     if (!S.profiles.length) { box.append(h('p', { class: 'muted' }, 'Add a child first.')); return; }
     const days = range(0, 6).map(i => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d; });
     for (const p of S.profiles) {

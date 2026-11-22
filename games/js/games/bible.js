@@ -1,4 +1,4 @@
-// Bible Stories: picture stories read by Tara, plus games that teach them, Goan Catholic life and prayers.
+// Bible Stories: picture stories read by Daisy, plus games that teach them, Goan Catholic life and prayers.
 // Stories are simple retellings for ages 3–6, told gently (nothing frightening). Short verses use common wording
 // with references. Prayers are the traditional English texts. Konkani prayers play only if the owner records them
 // (audio/konkani/prayer-*.mp3) — the owner will supply the Konkani text.
@@ -11,7 +11,7 @@ const opt = x => (typeof x === 'string' && x.length <= 6 ? em(x, 'xl') : tag(x[0
 /** Wait for a tap on a button; resolves false if the child leaves the game. */
 const waitTap = (ctx, btn) => new Promise(res => { btn.addEventListener('click', () => { sfx.tap(); res(true); }, { once: true }); const t = setInterval(() => { if (!ctx.alive()) { clearInterval(t); res(false); } }, 400); btn.addEventListener('click', () => clearInterval(t), { once: true }); });
 
-/* ---------- picture scenes: [emoji, x%, y%, size(1–3), what Tara says when tapped] ---------- */
+/* ---------- picture scenes: [emoji, x%, y%, size(1–3), what Daisy says when tapped] ---------- */
 function scene(bg, items, extra = '') {
   const s = h('div', { class: 'bscene bg-' + bg, html: extra });
   for (const [e, x, y, z = 2, say] of items) {
@@ -136,7 +136,7 @@ function storyScene(pg) {
 
 export const stories = {
   id: 'stories', title: 'Bible Story Time', icon: '📖', cat: 'bible', minBand: 1, color: '#7E57C2',
-  desc: 'Picture Bible stories read by Tara. Tap the pictures, then answer two questions!',
+  desc: 'Picture Bible stories read by Daisy. Tap the pictures, then answer two questions!',
   stages: STORIES.map(s => s.title),
   start: [0, 1, 2],
   async board(ctx) {

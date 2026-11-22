@@ -54,7 +54,7 @@ change, make it, test it in the browser pane, show the owner what changed, then 
   The wordmark "Goan" is always one colour per letter in that order.
 - Goan Indo-Portuguese art on top: lime-washed houses, red Mangalore roofs `#B5442E`, white trim, azulejo tiles.
   Fonts: Fredoka (UI, matches the logo's rounded letters), Andika (letters, single-storey a and g for early readers).
-- Mascot: Tara the olive ridley turtle 🐢.
+- Mascot: Daisy the bunny 🐰 (a rabbit; renamed from Tara the turtle in Nov 2026).
 - UK English everywhere (colour, maths, mum, ladybird, 1p/£1). Phonics as pure sounds ("sss", not "ess").
 - Big touch targets (iPad first), works at 375px phone width with no sideways scroll.
 - Kind feedback: never "wrong!"; after 2 misses the right answer glows.
