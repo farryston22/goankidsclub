@@ -66,6 +66,10 @@ change, make it, test it in the browser pane, show the owner what changed, then 
 3. Add it to `GAMES` in `js/app.js`, add the file to `FILES` in `sw.js` if new, bump `VERSION`.
 4. Test every stage in the browser pane at tablet (768) and phone (375) sizes.
 
+- `audio/konkani/*.mp3` (35 words) are the owner's cloned voice made with VoiceStudio (local, Goan Konkani mode, text in
+  Devanagari). The owner approved them; they can replace any with a real recording of the same name. Konkani prayers are
+  never AI: real recordings only.
+
 ## Things to check with the owner
 - Konkani spellings in `js/data.js` (`KONKANI`) — the owner teaches Konkani; ask before changing them.
 - Recorded audio clips go in `games/audio/` and must be listed in `games/audio/manifest.json`.
