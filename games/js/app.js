@@ -1,6 +1,6 @@
 // Goan Kids Club — Play & Learn. App shell: profiles, hub, stages, rounds, rewards, sticker book, grown-ups area.
 import { h, $, sleep, pick, rnd, range } from './util.js';
-import { speak, stop, onTalk, bindSettings, loadClips, sfx } from './audio.js';
+import { speak, stop, onTalk, bindSettings, loadClips, sfx, setChildName } from './audio.js';
 import * as N from './games/numbers.js';
 import * as L from './games/letters.js';
 import * as SH from './games/shapes.js';
@@ -163,7 +163,7 @@ function mascot(text = '') {
 }
 onTalk(on => document.querySelectorAll('.mascot').forEach(m => m.classList.toggle('talk', on)));
 function setBubble(t) { lastSaid = t; const b = $('#speech'); if (b) b.textContent = t; }
-function say(text, parts) { setBubble(text); return speak(parts || [text], text); }
+function say(text, parts) { setBubble(text); setChildName(me()?.name); return speak(parts || [text], text); }
 /* Goan village skyline with an azulejo tile band; the child's own house (from Build a Goan House) joins the street. */
 const village = p => h('div', { class: 'village' }, h('div', { class: 'sky', html: villageSVG(p && p.house) }), h('div', { class: 'azulejo' }));
 /* Wordmark in the logo's colours: blue G, yellow o, orange a, green n, navy "Kids Club". */

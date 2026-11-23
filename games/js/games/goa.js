@@ -396,7 +396,7 @@ export const safari = {
         a.addEventListener('click', async () => {
           if (done || !ctx.alive()) return;
           if (name === want[0]) { done = true; a.classList.add('found'); await ctx.good(a); await ctx.say(fact); res(wrong === 0); }
-          else { wrong++; ctx.bad(a); ctx.say(`That's a ${name}. Find the ${want[0]}!`); if (wrong >= 2) scene.querySelector(`[aria-label="${want[0]}"]`)?.classList.add('hintme'); }
+          else { wrong++; ctx.bad(a); ctx.say(`That's ${/^[aeiou]/i.test(name) ? 'an' : 'a'} ${name}. Find the ${want[0]}!`); if (wrong >= 2) scene.querySelector(`[aria-label="${want[0]}"]`)?.classList.add('hintme'); }
         });
         scene.append(a);
       });

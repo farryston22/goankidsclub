@@ -69,6 +69,10 @@ change, make it, test it in the browser pane, show the owner what changed, then 
 - `audio/konkani/*.mp3` (35 words) are the owner's cloned voice made with VoiceStudio (local, Goan Konkani mode, text in
   Devanagari). The owner approved them; they can replace any with a real recording of the same name. Konkani prayers are
   never AI: real recordings only.
+- English narration: `audio/say/*.mp3` (~1,300 sentences and sentence pieces) and `audio/num/<n>.mp3` (0–100, ordinals as
+  `num/<n>th`) in the owner's cloned voice. `audio.js` plays a sentence's own clip, or, for sentences with numbers or
+  the child's name, the pieces around them (name left out, still shown in the bubble); else the robot voice.
+  New or changed sentences fall back to the robot voice until voiced. Scripts: `D:\Goan Kids Club\voice-tools\`.
 
 ## Things to check with the owner
 - Konkani spellings in `js/data.js` (`KONKANI`) — the owner teaches Konkani; ask before changing them.

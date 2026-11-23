@@ -19,6 +19,30 @@ export const hasClip = k => clips.has(k);
 /** File name for a recorded sentence: lower case, words joined by dashes (see audio/VOICEOVERS.md). */
 export const slug = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70);
 
+/* A sentence with numbers or the child's name ("Well done, Maria! Put 5 baubles on the tree.") is played from pieces:
+   say/<slug> for each bit of text between them, num/<n> (or num/<n>th) for numbers. The name is left out of the
+   recording (it still shows in the speech bubble). Used only when every piece has a clip; otherwise the robot voice. */
+let childName = '';
+export const setChildName = n => { childName = String(n || '').trim(); };
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function splitPieces(text) {
+  const re = new RegExp('(\\d+(?:st|nd|rd|th)?' + (childName ? '|\\b' + esc(childName) + '\\b' : '') + ')', 'g');
+  return String(text).split(re).map((s, i) => i % 2
+    ? (/^\d/.test(s) ? { num: s.replace(/(\d)(st|nd|rd)$/, '$1th') } : { name: s })
+    : { t: s }).filter(p => p.num || p.name || slug(p.t));
+}
+function pieces(text) {
+  if (!/\d/.test(text) && !(childName && text.includes(childName))) return null;
+  const keys = [];
+  for (const p of splitPieces(text)) {
+    if (p.name) continue;
+    const k = p.num ? 'num/' + p.num : 'say/' + slug(p.t);
+    if (!clips.has(k)) return null;
+    keys.push(k);
+  }
+  return keys.length ? keys : null;
+}
+
 /* ---------- voice ---------- */
 const canTTS = 'speechSynthesis' in window;
 let voice = null;
@@ -74,8 +98,10 @@ export async function speak(parts, fallbackText = '') {
     if (my !== token) return;
     const part = typeof p === 'string' ? { t: p } : p;
     const auto = part.t && clips.size ? 'say/' + slug(part.t) : null;
+    const bits = !part.clip && auto && !clips.has(auto) ? pieces(part.t) : null;
     if (part.clip && clips.has(part.clip)) await clipOnce(part.clip, my);
     else if (auto && clips.has(auto)) await clipOnce(auto, my);
+    else if (bits) { for (const k of bits) { if (my !== token) return; await clipOnce(k, my); } }
     else await ttsOnce(part.t, my);
   }
   if (my === token) talkCb(false);

@@ -16,7 +16,7 @@ export const sorter = {
     if (st === 3) {
       const pool = ['circle', 'square', 'triangle', 'rectangle', 'star', 'heart', 'oval', 'diamond', 'pentagon', 'hexagon', 'octagon', 'semicircle'];
       const t = pick(pool);
-      return choice(ctx, { prompt: `Tap the ${t}.`, options: shuffle([t, ...sample(pool.filter(x => x !== t), 3)]).map(x => ({ node: shapeEl(x, pick(BRIGHT)), ok: x === t })), cols: 2, after: `That's a ${t}!` });
+      return choice(ctx, { prompt: `Tap the ${t}.`, options: shuffle([t, ...sample(pool.filter(x => x !== t), 3)]).map(x => ({ node: shapeEl(x, pick(BRIGHT)), ok: x === t })), cols: 2, after: `That's ${/^[aeiou]/i.test(t) ? 'an' : 'a'} ${t}!` });
     }
     if (st === 4) {
       const t = pick(['triangle', 'square', 'rectangle', 'pentagon', 'hexagon', 'octagon']), n = SHAPES[t].sides;
