@@ -16,8 +16,9 @@ import { cloudReady, newCode, normCode, loadFamily, saveFamily, deleteFamily, me
 import { track, once, statsOn, deviceKind, installed, newShareKey, shareChild, unshareChild } from './stats.js';
 
 export const GAMES = [
-  HG.house, HG.poder, HG.tiles, HG.goalife,
-  G.mapgame, G.villages, G.jigsaw, G.quizferry, G.festivals, G.konkanitalk, G.symbols, G.safari, G.seasons, G.kitchen, G.rhythm, G.railway, G.monuments,
+  HG.goalife, G.mapgame, G.villages, G.jigsaw, G.quizferry,   // owner's picks: always first
+  HG.house, HG.poder, HG.tiles,
+  G.festivals, G.konkanitalk, G.symbols, G.safari, G.seasons, G.kitchen, G.rhythm, G.railway, G.monuments,
   BB.stories, BB.noah, BB.creation, BB.lostsheep, BB.loaves, BB.coat, BB.storyorder, BB.banimals, BB.bpuzzles, BB.verses, BB.crib, BB.churchyear, BB.saints, BB.prayers,
   XM.kuswar, XM.xstar, XM.tree, XM.advent, XM.presents, XM.jingle, XM.xsounds, XM.xpuzzles,
   N.count, N.bubbles, N.more, N.frog, N.add, N.shop, TT.times,
